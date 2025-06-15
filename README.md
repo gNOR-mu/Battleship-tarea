@@ -12,7 +12,7 @@ Los barcos pueden ubicarse sólo en vertical u horizontal (no en diagonal), y ca
 - Y un Destructor (D), que usa 2 casillas.
 
 Un ejemplo de tablero puede ser:
-
+```
 0 D 0 0 0 0 0 0 0 0
 0 D 0 0 A A A A A 0
 0 0 0 0 0 0 0 0 0 0
@@ -23,7 +23,7 @@ Un ejemplo de tablero puede ser:
 0 C C C 0 0 0 0 0 0
 0 0 0 0 0 0 0 S S S
 0 0 0 0 0 0 0 0 0 0
-
+```
 El oceano se encuentra escondido para usted (privado en la clase Tablero.java). Usted puede disparar al tablero, indicando las coordenadas x e y. La clase le dirá si es que este disparo dio en un barco (y cual barco) y cuando falló. El objetivo es hundir todos los barcos (Ejemplo: para hundir el Buque, se debe disparar a sus 4 posiciones), en el menor número de disparos posibles.
 
 Usted puede sólo interactuar de la siguiente manera:
