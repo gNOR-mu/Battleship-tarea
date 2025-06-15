@@ -1,19 +1,19 @@
 package solucion;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import solucion.enumerados.Direccion;
+import solucion.mapa.MapaCalor;
+import solucion.mapa.MapaOceano;
 import problema.Tablero;
 
 public class Solucionador {
     // El tablero del problema no comienza en 0, tiene una corrección de 1
-    private final int CORRECCION = 1;
-    private Tablero tablero;
-    private MapaCalor mapaCalor;
-    private MapaOceano mapaOceano;
-    private Map<Character, Barco> barcos;
+    private static final int CORRECCION = 1;
+    private final Tablero tablero;
+    private final MapaCalor mapaCalor;
+    private final MapaOceano mapaOceano;
+    private final Map<Character, Barco> barcos;
 
     public Solucionador(Tablero tablero, int largoTablero, Map<Character, Barco> barcos) {
         this.tablero = tablero;
@@ -23,13 +23,12 @@ public class Solucionador {
     }
 
     public void solucionar() {
-        char disparo;
-        Punto sugerencia;
-        while (this.tablero.ganar() == 0) {
+        while (!barcos.isEmpty() && this.tablero.ganar() == 0) {
             this.mapaCalor.actualizarMapa(barcos);
-            sugerencia = this.mapaCalor.getSugerencia();
-            disparo = disparar(sugerencia);
-            // deja de ser azar
+            Punto sugerencia = this.mapaCalor.getSugerencia();
+            if (sugerencia == null)
+                break;
+            char disparo = disparar(sugerencia);
             if (esDisparoExitoso(disparo)) {
                 hundirBarco(sugerencia, disparo);
             }
@@ -41,36 +40,36 @@ public class Solucionador {
     }
 
     private char disparar(Punto punto) {
-        char disparo = this.tablero.disparo(punto.getFila() + this.CORRECCION, punto.getColumna() + this.CORRECCION);
+        char disparo = this.tablero.disparo(punto.getFila() + CORRECCION, punto.getColumna() + CORRECCION);
         this.mapaOceano.marcar(punto, disparo);
-        if (esDisparoExitoso(disparo)) {
-            this.barcos.get(disparo).quitarVida();
+        Barco barco = barcos.get(disparo);
+        if (barco != null) {
+            barco.quitarVida();
         }
         return disparo;
     }
 
-    private void hundirBarco(Punto punto, char nombreBarco) {
+    private void hundirBarco(Punto puntoInicialImpacto, char nombreBarco) {
         Barco barco = barcos.get(nombreBarco);
-        Punto nuevoPunto = new Punto(punto);
-        char disparo;
+        if (barco == null) {
+            return;
+        }
+        Punto puntoActualDisparo = new Punto(puntoInicialImpacto);
+        char resultadoDisparo;
         while (barco.getVida() > 0) {
-            nuevoPunto = mapaCalor.getSugerenciaFocalizada(punto, nuevoPunto, barco);
-            disparo = disparar(nuevoPunto);
-            if (disparo != barco.getNombre()) {
-                if (esDisparoExitoso(disparo)) {
-                    Punto puntoRecursivo = new Punto(nuevoPunto);
-                    puntoRecursivo.setDireccion(null);
-                    hundirBarco(puntoRecursivo, disparo);
+            puntoActualDisparo = mapaCalor.getSugerenciaFocalizada(puntoInicialImpacto, puntoActualDisparo, barco);
+            resultadoDisparo = disparar(puntoActualDisparo);
+            if (resultadoDisparo != barco.getNombre()) {
+                if (esDisparoExitoso(resultadoDisparo)) {
+                    hundirBarco(new Punto(puntoActualDisparo), resultadoDisparo);
                 }
-                // lo dejo al azar si no le he pegado al barco 2 veces
-                Direccion direccionOpuesta = (barco.getVida() < barco.getLargo() - 1)
-                        ? nuevoPunto.getDireccion().direccionOpuesta()
-                        : null;
-                nuevoPunto = new Punto(punto);
-                nuevoPunto.setDireccion(direccionOpuesta);
+                Direccion direccionOpuesta = null;
+                if (puntoActualDisparo.getDireccion() != null) {
+                    direccionOpuesta = puntoActualDisparo.getDireccion().direccionOpuesta();
+                }
+                puntoActualDisparo = new Punto(puntoInicialImpacto, direccionOpuesta);
             }
         }
         this.barcos.remove(barco.getNombre());
     }
-
 }

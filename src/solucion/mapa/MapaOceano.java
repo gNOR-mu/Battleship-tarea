@@ -1,18 +1,16 @@
-package solucion;
+package solucion.mapa;
 
 import java.util.Arrays;
-
+import solucion.Barco;
+import solucion.Punto;
 import solucion.enumerados.Direccion;
 
-public class MapaOceano extends Mapa {
-    private char DESCONOCIDO;
-    private char[][] mapa;
+public class MapaOceano extends Mapa<Character> {
+    private static final char DESCONOCIDO = ' ';
 
     public MapaOceano(int largoTablero) {
-        super(largoTablero);
-        this.mapa = new char[largoTablero][largoTablero];
-        this.DESCONOCIDO = ' ';
-        this.inicializarTablero();
+        super(largoTablero, Character.class);
+        inicializarTablero();
     }
 
     @Override
@@ -21,27 +19,27 @@ public class MapaOceano extends Mapa {
     }
 
     private void inicializarTablero() {
-        for (char[] fila : mapa) {
+        for (Character[] fila : mapa) {
             Arrays.fill(fila, DESCONOCIDO);
         }
     }
 
     public boolean esCasillaDesconocida(Punto punto) {
-        return this.mapa[punto.getFila()][punto.getColumna()] == this.DESCONOCIDO;
+        return mapa[punto.getFila()][punto.getColumna()] == DESCONOCIDO;
     }
 
     public boolean esPosicionDelBarco(Punto punto, char nombreBarco) {
-        return this.mapa[punto.getFila()][punto.getColumna()] == nombreBarco;
+        return mapa[punto.getFila()][punto.getColumna()] == nombreBarco;
     }
 
     public void marcar(Punto punto, char simbolo) {
-        if (this.esCoordenadaValida(punto)) {
-            this.mapa[punto.getFila()][punto.getColumna()] = simbolo;
+        if (esCoordenadaValida(punto)) {
+            mapa[punto.getFila()][punto.getColumna()] = simbolo;
         }
     }
 
     public boolean puedeUbicarse(Barco barco, Punto punto) {
-        if (!esDireccionValida(barco.getLargo(), punto) ) {
+        if (!esDireccionValida(barco.getLargo(), punto)) {
             return false;
         }
         return switch (punto.getDireccion()) {
@@ -53,9 +51,12 @@ public class MapaOceano extends Mapa {
 
     private boolean puedeUbicarseHorizontal(Barco barco, Punto punto) {
         int cambio = (punto.getDireccion() == Direccion.DERECHA) ? 1 : -1;
+        int fila = punto.getFila();
+        int nombre = barco.getNombre();
         for (int i = 0; i < barco.getLargo(); i++) {
             int nuevaY = punto.getColumna() + (i * cambio);
-            if (mapa[punto.getFila()][nuevaY] != DESCONOCIDO && mapa[punto.getFila()][nuevaY] != barco.getNombre()) {
+            char valor = mapa[fila][nuevaY];
+            if (valor != DESCONOCIDO && valor != nombre) {
                 return false;
             }
         }
@@ -64,13 +65,15 @@ public class MapaOceano extends Mapa {
 
     private boolean puedeUbicarseVertical(Barco barco, Punto punto) {
         int cambio = (punto.getDireccion() == Direccion.ABAJO) ? 1 : -1;
+        int columna = punto.getColumna();
+        int nombre = barco.getNombre();
         for (int i = 0; i < barco.getLargo(); i++) {
             int nuevaX = punto.getFila() + (i * cambio);
-            if (mapa[nuevaX][punto.getColumna()] != DESCONOCIDO && mapa[nuevaX][punto.getColumna()] != barco.getNombre()) {
+            char valor = mapa[nuevaX][columna];
+            if (valor != DESCONOCIDO && valor != nombre) {
                 return false;
             }
         }
         return true;
     }
-
 }

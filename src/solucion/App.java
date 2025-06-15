@@ -12,16 +12,13 @@ public class App {
     public static void main(String[] args) throws Exception {
         final int LARGO_TABLERO = 10;
         final int CANTIDAD_JUEGOS = obtenerCantidadJuegos();
-        // 500_000 juegos aprox 20s en 14600k
+        // 500_000 juegos aprox 14.4s en 14600k
         AtomicInteger intentos = new AtomicInteger(0);
-        Map<Character, Barco> barcos = crearBarcos();
         long startTime = System.currentTimeMillis();
         IntStream.range(0, CANTIDAD_JUEGOS).parallel().forEach(i -> {
             Tablero tablero = new Tablero(LARGO_TABLERO);
-            Map<Character, Barco> copiaBarcos = barcos.entrySet().stream()
-                    .collect(Collectors.toMap(Map.Entry::getKey, e -> new Barco(e.getValue())));
-
-            Solucionador solucionador = new Solucionador(tablero, LARGO_TABLERO, copiaBarcos);
+            Map<Character, Barco> barcos = crearBarcos();
+            Solucionador solucionador = new Solucionador(tablero, LARGO_TABLERO, barcos);
             solucionador.solucionar();
             intentos.addAndGet(tablero.ganar());
         });

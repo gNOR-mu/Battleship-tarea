@@ -7,15 +7,15 @@ public class Punto {
     private int columna;
     private Direccion direccion;
 
-    public Punto(int x, int y) {
-        this.fila = x;
-        this.columna = y;
+    public Punto(int fila, int columna) {
+        this.fila = fila;
+        this.columna = columna;
         this.direccion = null;
     }
 
-    public Punto(int x, int y, Direccion direccion) {
-        this.fila = x;
-        this.columna = y;
+    public Punto(Punto otro, Direccion direccion) {
+        this.fila = otro.fila;
+        this.columna = otro.columna;
         this.direccion = direccion;
     }
 
@@ -33,7 +33,7 @@ public class Punto {
 
     @Override
     public String toString() {
-        return String.format("Punto(x:%d, y:%d)", this.fila, this.columna);
+        return String.format("Punto(Fila:%d, Columna:%d, Direccion:%s)", this.fila, this.columna, this.direccion);
     }
 
     public int getFila() {

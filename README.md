@@ -1,3 +1,5 @@
+# JDK
+JDK: 21
 # Enunciado
 PROYECTO:
 Asunto:
