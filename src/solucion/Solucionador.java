@@ -23,11 +23,9 @@ public class Solucionador {
     }
 
     public void solucionar() {
-        while (!barcos.isEmpty() && this.tablero.ganar() == 0) {
+        while (this.tablero.ganar() == 0) {
             this.mapaCalor.actualizarMapa(barcos);
             Punto sugerencia = this.mapaCalor.getSugerencia();
-            if (sugerencia == null)
-                break;
             char disparo = disparar(sugerencia);
             if (esDisparoExitoso(disparo)) {
                 hundirBarco(sugerencia, disparo);
@@ -57,7 +55,7 @@ public class Solucionador {
         Punto puntoActualDisparo = new Punto(puntoInicialImpacto);
         char resultadoDisparo;
         while (barco.getVida() > 0) {
-            puntoActualDisparo = mapaCalor.getSugerenciaFocalizada(puntoInicialImpacto, puntoActualDisparo, barco);
+            puntoActualDisparo = mapaCalor.getSugerenciaFocalizada(puntoInicialImpacto, puntoActualDisparo);
             resultadoDisparo = disparar(puntoActualDisparo);
             if (resultadoDisparo != barco.getNombre()) {
                 if (esDisparoExitoso(resultadoDisparo)) {

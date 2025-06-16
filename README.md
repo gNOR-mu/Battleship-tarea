@@ -1,5 +1,9 @@
 # JDK
 JDK: 21
+
+# Pendiente
+Agregar verificación de si es posible ubicar el barco en una determinada línea, con esto debería bajar al menos 1 disparo.
+
 # Enunciado
 PROYECTO:
 Asunto:

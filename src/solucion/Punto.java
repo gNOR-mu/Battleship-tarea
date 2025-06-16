@@ -36,6 +36,14 @@ public class Punto {
         return String.format("Punto(Fila:%d, Columna:%d, Direccion:%s)", this.fila, this.columna, this.direccion);
     }
 
+    public void setFila(int fila) {
+        this.fila = fila;
+    }
+
+    public void setColumna(int columna) {
+        this.columna = columna;
+    }
+
     public int getFila() {
         return this.fila;
     }

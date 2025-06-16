@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import solucion.Punto;
 import solucion.enumerados.Direccion;
+
 import java.lang.reflect.Array;
 
 public class Mapa<T> {
@@ -19,14 +20,18 @@ public class Mapa<T> {
 
     @Override
     public String toString() {
-        return String.format("MapaCalor(%n%s)", Arrays.deepToString(mapa).replace("],", "]\n"));
+        int maxFilas = Math.min(5, mapa.length);
+        StringBuilder sb = new StringBuilder("Mapa del océano:\n");
+        for (int i = 0; i < maxFilas; i++) {
+            sb.append(Arrays.toString(mapa[i])).append("\n");
+        }
+        if (mapa.length > maxFilas)
+            sb.append("...\n");
+        return sb.toString();
     }
 
     protected boolean esDireccionValida(int largoBarco, Punto punto) {
-        int valorEje = switch (punto.getDireccion()) {
-            case ARRIBA, ABAJO -> punto.getFila();
-            case IZQUIERDA, DERECHA -> punto.getColumna();
-        };
+        int valorEje = (punto.getDireccion() == Direccion.ARRIBA || punto.getDireccion() == Direccion.ABAJO) ? punto.getFila() : punto.getColumna();
         return switch (punto.getDireccion()) {
             case ARRIBA, IZQUIERDA -> valorEje - (largoBarco - 1) >= 0;
             case ABAJO, DERECHA -> valorEje + (largoBarco - 1) < mapa.length;
@@ -35,12 +40,10 @@ public class Mapa<T> {
     }
 
     protected boolean esCoordenadaValida(Punto punto) {
-        if (punto == null) {
-            return false;
-        }
-        return (punto.getFila() >= 0
+        return (punto != null
+                && punto.getFila() >= 0
                 && punto.getFila() < mapa.length
                 && punto.getColumna() >= 0
-                && punto.getColumna() < mapa.length);
+                && punto.getColumna() < mapa[0].length);
     }
 }

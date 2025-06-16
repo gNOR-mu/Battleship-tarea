@@ -3,16 +3,13 @@ package solucion.mapa;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
-import java.util.stream.IntStream;
+import java.util.concurrent.ThreadLocalRandom;
 
 import solucion.Barco;
 import solucion.Punto;
 import solucion.enumerados.Direccion;
 
-import java.security.SecureRandom;
-
 public class MapaCalor extends Mapa<Integer> {
-    private static final SecureRandom RANDOM = new SecureRandom();
     private MapaOceano mapaOceano;
 
     public MapaCalor(int largoTablero, MapaOceano mapaOceano) {
@@ -22,23 +19,28 @@ public class MapaCalor extends Mapa<Integer> {
 
     public void actualizarMapa(Map<Character, Barco> barcos) {
         reiniciarMapa();
-        IntStream.range(0, mapa.length * mapa[0].length).forEach(idx -> {
-            int fila = idx / mapa.length;
-            int columna = idx % mapa[0].length;
-            int posibilidad = 0;
-            Punto punto = new Punto(fila, columna);
-            for (Barco barco : barcos.values()) {
-                punto.setDireccion(Direccion.ARRIBA);
-                posibilidad += posibilidadDireccion(barco, punto);
-                punto.setDireccion(Direccion.ABAJO);
-                posibilidad += posibilidadDireccion(barco, punto);
-                punto.setDireccion(Direccion.IZQUIERDA);
-                posibilidad += posibilidadDireccion(barco, punto);
-                punto.setDireccion(Direccion.DERECHA);
-                posibilidad += posibilidadDireccion(barco, punto);
+        int filas = mapa.length;
+        int columnas = mapa[0].length;
+        int posibilidad;
+        Punto punto = new Punto(0,0);
+        for (int fila = 0; fila < filas; fila++) {
+            for (int columna = 0; columna < columnas; columna++) {
+                posibilidad = 0;
+                punto.setFila(fila);
+                punto.setColumna(columna);
+                for (Barco barco : barcos.values()) {
+                    punto.setDireccion(Direccion.ARRIBA);
+                    posibilidad += posibilidadDireccion(barco, punto);
+                    punto.setDireccion(Direccion.ABAJO);
+                    posibilidad += posibilidadDireccion(barco, punto);
+                    punto.setDireccion(Direccion.IZQUIERDA);
+                    posibilidad += posibilidadDireccion(barco, punto);
+                    punto.setDireccion(Direccion.DERECHA);
+                    posibilidad += posibilidadDireccion(barco, punto);
+                }
+                mapa[fila][columna] = posibilidad;
             }
-            mapa[fila][columna] += posibilidad;
-        });
+        }
     }
 
     private int posibilidadDireccion(Barco barco, Punto punto) {
@@ -46,30 +48,34 @@ public class MapaCalor extends Mapa<Integer> {
     }
 
     private void reiniciarMapa() {
-        for (Integer[] fila : mapa) {
-            Arrays.fill(fila, 0);
+        int filas = mapa.length;
+        for (int i = 0; i < filas; i++) {
+            Arrays.fill(mapa[i], 0);
         }
     }
 
     public Punto getSugerencia() {
         int mayorPosibilidad = 0;
         ArrayList<Punto> sugerencias = new ArrayList<>();
-        for (int fila = 0; fila < mapa.length; fila++) {
-            for (int columna = 0; columna < mapa[0].length; columna++) {
-                int valor = mapa[fila][columna];
+        int filas = mapa.length;
+        int columnas = mapa[0].length;
+        for (int i = 0; i < filas; i++) {
+            for (int columna = 0; columna < columnas; columna++) {
+                int valor = mapa[i][columna];
                 if (valor > mayorPosibilidad) {
                     mayorPosibilidad = valor;
                     sugerencias.clear();
                 }
-                if (valor == mayorPosibilidad && valor > 0 && mapaOceano.esCasillaDesconocida(new Punto(fila, columna))) {
-                    sugerencias.add(new Punto(fila, columna));
+                boolean esDesconocida = mapaOceano.esCasillaDesconocida(new Punto(i, columna));
+                if (valor == mayorPosibilidad && valor > 0 && esDesconocida) {
+                    sugerencias.add(new Punto(i, columna));
                 }
             }
         }
         if (sugerencias.isEmpty()) {
             return null;
         }
-        return sugerencias.get(RANDOM.nextInt(sugerencias.size()));
+        return sugerencias.get(ThreadLocalRandom.current().nextInt(sugerencias.size()));
     }
 
     public boolean chocaConBorde(Punto punto) {
@@ -82,10 +88,10 @@ public class MapaCalor extends Mapa<Integer> {
         };
     }
 
-      public Punto getSugerenciaFocalizada(Punto puntoOriginal, Punto puntoActualDisparo, Barco barco) {
+    public Punto getSugerenciaFocalizada(Punto puntoOriginal, Punto puntoActualDisparo) {
         boolean direccionIntentadaCambiada = false;
         Punto posiblePuntoSugerido;
-        do {
+        while (true) {
             posiblePuntoSugerido = new Punto(puntoActualDisparo);
             if (posiblePuntoSugerido.getDireccion() == null) {
                 posiblePuntoSugerido.setDireccion(Direccion.direccionAleatoria());
@@ -110,7 +116,7 @@ public class MapaCalor extends Mapa<Integer> {
             if (esCoordenadaValida(posiblePuntoSugerido) && mapaOceano.esCasillaDesconocida(posiblePuntoSugerido)) {
                 return posiblePuntoSugerido;
             }
-        } while (true);
+        }
     }
 
 }
