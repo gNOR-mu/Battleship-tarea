@@ -26,12 +26,6 @@ public class Punto {
     }
 
     @Override
-    public boolean equals(Object o) {
-        Punto p = (Punto) o;
-        return (this.fila == p.fila && this.columna == p.columna);
-    }
-
-    @Override
     public String toString() {
         return String.format("Punto(Fila:%d, Columna:%d, Direccion:%s)", this.fila, this.columna, this.direccion);
     }
@@ -60,7 +54,7 @@ public class Punto {
         this.direccion = direccion;
     }
 
-    public void mover(Direccion direccion) {
+    public void mover() {
         switch (direccion) {
             case ABAJO -> this.fila += 1;
             case ARRIBA -> this.fila -= 1;

@@ -8,13 +8,29 @@ public enum Direccion {
     public static Direccion direccionAleatoria() {
         return values()[ThreadLocalRandom.current().nextInt(values().length)];
     }
+
     public Direccion direccionOpuesta() {
-        return switch (this) {
-            case IZQUIERDA -> Direccion.DERECHA;
-            case DERECHA -> Direccion.IZQUIERDA;
-            case ARRIBA -> Direccion.ABAJO;
-            case ABAJO -> Direccion.ARRIBA;
-            default -> null;
-        };
+        if (this == IZQUIERDA) {
+            return DERECHA;
+        } else if (this == DERECHA) {
+            return IZQUIERDA;
+        } else if (this == ARRIBA) {
+            return ABAJO;
+        } else if (this == ABAJO) {
+            return ARRIBA;
+        }
+        return null;
+    }
+
+    public Direccion direccionSentidoOpuestoAleatorio() {
+        if (this == IZQUIERDA || this == DERECHA) {
+            Direccion[] direcciones = { ARRIBA, ABAJO };
+            return direcciones[ThreadLocalRandom.current().nextInt(direcciones.length)];
+
+        } else if (this == ARRIBA || this == ABAJO) {
+            Direccion[] direcciones = { IZQUIERDA, DERECHA };
+            return direcciones[ThreadLocalRandom.current().nextInt(direcciones.length)];
+        }
+        return null;
     }
 }

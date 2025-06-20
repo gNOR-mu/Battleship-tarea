@@ -30,13 +30,14 @@ public class Mapa<T> {
         return sb.toString();
     }
 
-    protected boolean esDireccionValida(int largoBarco, Punto punto) {
-        int valorEje = (punto.getDireccion() == Direccion.ARRIBA || punto.getDireccion() == Direccion.ABAJO) ? punto.getFila() : punto.getColumna();
-        return switch (punto.getDireccion()) {
-            case ARRIBA, IZQUIERDA -> valorEje - (largoBarco - 1) >= 0;
-            case ABAJO, DERECHA -> valorEje + (largoBarco - 1) < mapa.length;
-            default -> false;
-        };
+    protected boolean esDireccionValida(Direccion direccion, int largoBarco, int valorEje) {
+        largoBarco--;
+        if (direccion == Direccion.ARRIBA || direccion == Direccion.IZQUIERDA) {
+            return valorEje - largoBarco >= 0;
+        } else if (direccion == Direccion.ABAJO || direccion == Direccion.DERECHA) {
+            return valorEje + largoBarco < mapa.length;
+        }
+        return false;
     }
 
     protected boolean esCoordenadaValida(Punto punto) {

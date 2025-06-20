@@ -6,7 +6,11 @@ import solucion.Punto;
 import solucion.enumerados.Direccion;
 
 public class MapaOceano extends Mapa<Character> {
-    private static final char DESCONOCIDO = ' ';
+    private static final char DESCONOCIDO;
+
+    static {
+        DESCONOCIDO = ' ';
+    }
 
     public MapaOceano(int largoTablero) {
         super(largoTablero, Character.class);
@@ -34,48 +38,28 @@ public class MapaOceano extends Mapa<Character> {
     }
 
     public boolean puedeUbicarse(Barco barco, Punto punto) {
-        if (!esDireccionValida(barco.getLargo(), punto)) {
+        Direccion direccion = punto.getDireccion();
+        int valorEje = (punto.getDireccion() == Direccion.IZQUIERDA || punto.getDireccion() == Direccion.DERECHA)
+                ? punto.getColumna()
+                : punto.getFila();
+        int largo = barco.getLargo();
+        if (!esDireccionValida(direccion, largo, valorEje)) {
             return false;
         }
-        Direccion dir = punto.getDireccion();
-        if (dir == Direccion.IZQUIERDA || dir == Direccion.DERECHA) {
-            return puedeUbicarseHorizontal(barco, punto);
-        } else if (dir == Direccion.ARRIBA || dir == Direccion.ABAJO) {
-            return puedeUbicarseVertical(barco, punto);
-        }
-        return false;
-    }
-
-    private boolean puedeUbicarseHorizontal(Barco barco, Punto punto) {
-        int cambio = (punto.getDireccion() == Direccion.DERECHA) ? 1 : -1;
-        int fila = punto.getFila();
-        int nombre = barco.getNombre();
-        int largo = barco.getLargo();
-        int columnaInicial = punto.getColumna();
-
+        int cambio = (direccion == Direccion.DERECHA || direccion == Direccion.ABAJO) ? 1 : -1;
+        char valor;
         for (int i = 0; i < largo; i++) {
-            int nuevaY = columnaInicial + (i * cambio);
-            char valor = mapa[fila][nuevaY];
-            if (valor != DESCONOCIDO && valor != nombre) {
+            int nuevoValor = valorEje + (i * cambio);
+            if (direccion == Direccion.DERECHA || direccion == Direccion.IZQUIERDA) {
+                valor = mapa[punto.getFila()][nuevoValor];
+            } else {
+                valor = mapa[nuevoValor][punto.getColumna()];
+            }
+            if (valor != DESCONOCIDO && valor != barco.getNombre()) {
                 return false;
             }
         }
         return true;
     }
 
-    private boolean puedeUbicarseVertical(Barco barco, Punto punto) {
-        int cambio = (punto.getDireccion() == Direccion.ABAJO) ? 1 : -1;
-        int columna = punto.getColumna();
-        char nombre = barco.getNombre();
-        int largo = barco.getLargo();
-        int filaInicial = punto.getFila();
-        for (int i = 0; i < largo; i++) {
-            int nuevaX = filaInicial + (i * cambio);
-            char valor = mapa[nuevaX][columna];
-            if (valor != DESCONOCIDO && valor != nombre) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

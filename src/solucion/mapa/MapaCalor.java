@@ -22,12 +22,12 @@ public class MapaCalor extends Mapa<Integer> {
         int filas = mapa.length;
         int columnas = mapa[0].length;
         int posibilidad;
-        Punto punto = new Punto(0,0);
+        Punto punto = new Punto(0, 0);
         for (int fila = 0; fila < filas; fila++) {
+            punto.setFila(fila);
             for (int columna = 0; columna < columnas; columna++) {
-                posibilidad = 0;
-                punto.setFila(fila);
                 punto.setColumna(columna);
+                posibilidad = 0;
                 for (Barco barco : barcos.values()) {
                     punto.setDireccion(Direccion.ARRIBA);
                     posibilidad += posibilidadDireccion(barco, punto);
@@ -38,13 +38,13 @@ public class MapaCalor extends Mapa<Integer> {
                     punto.setDireccion(Direccion.DERECHA);
                     posibilidad += posibilidadDireccion(barco, punto);
                 }
-                mapa[fila][columna] = posibilidad;
+                mapa[fila][columna] += posibilidad;
             }
         }
     }
 
     private int posibilidadDireccion(Barco barco, Punto punto) {
-        return (esDireccionValida(barco.getLargo(), punto) && mapaOceano.puedeUbicarse(barco, punto)) ? 1 : 0;
+        return Boolean.compare(mapaOceano.puedeUbicarse(barco, punto), false);
     }
 
     private void reiniciarMapa() {
@@ -78,45 +78,26 @@ public class MapaCalor extends Mapa<Integer> {
         return sugerencias.get(ThreadLocalRandom.current().nextInt(sugerencias.size()));
     }
 
-    public boolean chocaConBorde(Punto punto) {
-        return switch (punto.getDireccion()) {
-            case IZQUIERDA -> punto.getFila() == 0;
-            case ARRIBA -> punto.getColumna() == 0;
-            case DERECHA -> punto.getFila() == mapa.length - 1;
-            case ABAJO -> punto.getColumna() == mapa[0].length - 1;
-            default -> false;
-        };
-    }
-
-    public Punto getSugerenciaFocalizada(Punto puntoOriginal, Punto puntoActualDisparo) {
-        boolean direccionIntentadaCambiada = false;
-        Punto posiblePuntoSugerido;
-        while (true) {
-            posiblePuntoSugerido = new Punto(puntoActualDisparo);
-            if (posiblePuntoSugerido.getDireccion() == null) {
-                posiblePuntoSugerido.setDireccion(Direccion.direccionAleatoria());
-            }
-            switch (posiblePuntoSugerido.getDireccion()) {
-                case IZQUIERDA -> posiblePuntoSugerido.mover(Direccion.IZQUIERDA);
-                case DERECHA -> posiblePuntoSugerido.mover(Direccion.DERECHA);
-                case ARRIBA -> posiblePuntoSugerido.mover(Direccion.ARRIBA);
-                case ABAJO -> posiblePuntoSugerido.mover(Direccion.ABAJO);
-            }
-            if (puntoActualDisparo.getDireccion() != null) {
-                if (direccionIntentadaCambiada) {
-                    puntoActualDisparo.setDireccion(null);
-                } else if (chocaConBorde(posiblePuntoSugerido) || !esCoordenadaValida(posiblePuntoSugerido)
-                        || !mapaOceano.esCasillaDesconocida(posiblePuntoSugerido)) {
-                    direccionIntentadaCambiada = true;
-                    Direccion nuevaDireccion = posiblePuntoSugerido.getDireccion().direccionOpuesta();
-                    puntoActualDisparo = new Punto(puntoOriginal, nuevaDireccion);
-                    continue;
-                }
-            }
-            if (esCoordenadaValida(posiblePuntoSugerido) && mapaOceano.esCasillaDesconocida(posiblePuntoSugerido)) {
-                return posiblePuntoSugerido;
-            }
+    public Punto getSugerenciaFocalizada(Punto puntoOriginal, Punto puntoActual) {
+        if (puntoActual.getDireccion() == null) {
+            puntoActual.setDireccion(Direccion.direccionAleatoria());
         }
+
+        for (int i = 0; i < 4; i++) {
+            Punto puntoSugerido = new Punto(puntoActual);
+            Direccion nuevaDireccion;
+            puntoSugerido.mover();
+            if (esCoordenadaValida(puntoSugerido) && mapaOceano.esCasillaDesconocida(puntoSugerido)) {
+                return puntoSugerido;
+            }
+            if (i == 0 || i == 2) {
+                nuevaDireccion = puntoActual.getDireccion().direccionOpuesta();
+            } else {
+                nuevaDireccion = puntoActual.getDireccion().direccionSentidoOpuestoAleatorio();
+            }
+            puntoActual = new Punto(puntoOriginal, nuevaDireccion);
+        }
+        return null;
     }
 
 }
