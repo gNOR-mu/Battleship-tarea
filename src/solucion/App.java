@@ -12,7 +12,7 @@ public class App {
         final int LARGO_TABLERO = 10;
         final int CANTIDAD_JUEGOS = 500_000;
         final int CANTIDAD_HILOS = Runtime.getRuntime().availableProcessors();
-        // mejor tiempo 4.954s para 500_000 juegos en i5-14600k
+        // mejor tiempo 1.506s para 500_000 juegos en i5-14600k
         AtomicInteger intentos = new AtomicInteger(0);
         ForkJoinPool forkJoinPool = new ForkJoinPool(CANTIDAD_HILOS);
         System.out.println("Usando: " + CANTIDAD_HILOS + " hilos");

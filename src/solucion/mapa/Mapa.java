@@ -20,13 +20,10 @@ public class Mapa<T> {
 
     @Override
     public String toString() {
-        int maxFilas = Math.min(5, mapa.length);
         StringBuilder sb = new StringBuilder("Mapa del océano:\n");
-        for (int i = 0; i < maxFilas; i++) {
+        for (int i = 0; i < mapa.length; i++) {
             sb.append(Arrays.toString(mapa[i])).append("\n");
         }
-        if (mapa.length > maxFilas)
-            sb.append("...\n");
         return sb.toString();
     }
 
@@ -38,6 +35,11 @@ public class Mapa<T> {
             return valorEje + largoBarco < mapa.length;
         }
         return false;
+        // aumenta el tiempo de ejecución 0.8s
+        // return switch(direccion){
+        //     case IZQUIERDA,ARRIBA -> valorEje - largoBarco >= 0;
+        //     case DERECHA,ABAJO -> valorEje + largoBarco < mapa.length;
+        // };
     }
 
     protected boolean esCoordenadaValida(Punto punto) {

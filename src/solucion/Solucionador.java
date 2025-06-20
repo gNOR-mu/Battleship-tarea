@@ -23,8 +23,8 @@ public class Solucionador {
     }
 
     public void solucionar() {
+        this.mapaCalor.actualizarMapa(barcos);
         while (this.tablero.ganar() == 0) {
-            this.mapaCalor.actualizarMapa(barcos);
             Punto sugerencia = this.mapaCalor.getSugerencia();
             char disparo = disparar(sugerencia);
             if (esDisparoExitoso(disparo)) {
@@ -44,6 +44,8 @@ public class Solucionador {
         if (barco != null) {
             barco.quitarVida();
         }
+        mapaCalor.actualizarMapaCercano(barcos, punto);
+
         return disparo;
     }
 

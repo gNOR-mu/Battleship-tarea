@@ -2,7 +2,7 @@
 JDK: 21
 
 # Nota
-- El objetivo principal de la tarea es resolver en menos de 50 tiros (cumplido: promedio en 43.53 tiros).
+- El objetivo principal de la tarea es resolver en menos de 50 tiros (cumplido: promedio en 42.0 tiros).
 - Adicionalmente me quiero enfocar en resolver los 500 000 tableros en menos de 1 segundo sin importar el tipo de optimización que conlleve.
   
 # Pendiente
