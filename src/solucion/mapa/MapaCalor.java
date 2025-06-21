@@ -9,10 +9,12 @@ import solucion.enumerados.Direccion;
 
 public class MapaCalor extends Mapa<Integer> {
     private MapaOceano mapaOceano;
-    private static final double CAMBIO_PUNTAJE; //sirve como ajuste de puntaje, afecta el promedio
+    private static final double CAMBIO_PUNTAJE; // sirve como ajuste de puntaje, afecta el promedio
+    private static final double PENALIZACION_BORDE;
 
-    static{
-        CAMBIO_PUNTAJE = 1.6;
+    static {
+        CAMBIO_PUNTAJE = 1.25;
+        PENALIZACION_BORDE = 1.189;
     }
 
     public MapaCalor(int largoTablero, MapaOceano mapaOceano) {
@@ -47,7 +49,19 @@ public class MapaCalor extends Mapa<Integer> {
         posibilidad += mapaOceano.puedeUbicarse(barco, puntoAuxiliar) ? 1 : 0;
         puntoAuxiliar.setDireccion(Direccion.DERECHA);
         posibilidad += mapaOceano.puedeUbicarse(barco, puntoAuxiliar) ? 1 : 0;
-        return (int) (posibilidad * (CAMBIO_PUNTAJE));
+        return (int) (posibilidad * CAMBIO_PUNTAJE * penalizacionBorde(punto));
+    }
+
+    private double penalizacionBorde(Punto punto) {
+        int fila = punto.getFila();
+        int columna = punto.getColumna();
+        int distArriba = fila;
+        int distAbajo = LARGO_MAPA - 1 - fila;
+        int distIzquierda = columna;
+        int distDerecha = LARGO_MAPA - 1 - columna;
+        int minDist = Math.min(Math.min(distArriba, distAbajo), Math.min(distIzquierda, distDerecha));
+        // Penalización suave: cuanto más lejos del borde, mayor el factor (puedes ajustar el +1 o el divisor)
+        return PENALIZACION_BORDE + (minDist / (double) LARGO_MAPA);
     }
 
     /**
