@@ -9,6 +9,11 @@ import solucion.enumerados.Direccion;
 
 public class MapaCalor extends Mapa<Integer> {
     private MapaOceano mapaOceano;
+    private static final double CAMBIO_PUNTAJE; //sirve como ajuste de puntaje, afecta el promedio
+
+    static{
+        CAMBIO_PUNTAJE = 1.6;
+    }
 
     public MapaCalor(int largoTablero, MapaOceano mapaOceano) {
         super(largoTablero, Integer.class, 0);
@@ -16,20 +21,18 @@ public class MapaCalor extends Mapa<Integer> {
     }
 
     public void actualizarMapa(Map<Character, Barco> barcos) {
-        int posibilidad;
         Punto punto = new Punto(0, 0);
-        for (Barco barco : barcos.values()) {
-            for (int fila = 0; fila < LARGO_MAPA; fila++) {
-                punto.setFila(fila);
-                for (int columna = 0; columna < LARGO_MAPA; columna++) {
-                    punto.setColumna(columna);
-                    if (!mapaOceano.esCasillaDesconocida(punto)) {
-                        continue;
-                    }
-                    posibilidad = 0;
-                    posibilidad += posibilidadesBarcos(barco, punto);
-                    marcar(punto, posibilidad);
+        for (int fila = 0; fila < LARGO_MAPA; fila++) {
+            punto.setFila(fila);
+            for (int columna = 0; columna < LARGO_MAPA; columna++) {
+                punto.setColumna(columna);
+                int posibilidad = 0;
+                for (Barco barco : barcos.values()) {
+                    posibilidad += posibilidadesBarcos(barco, punto); // como debe ser promedia 41.6
+                    // posibilidad = posibilidadesBarcos(barco, punto); //curioso que promedia 40.3
                 }
+                // mapa[fila][columna] += posibilidad;
+                marcar(punto, posibilidad);// llegando a las conclusiones correctas por las razones equivocadas
             }
         }
     }
@@ -44,7 +47,7 @@ public class MapaCalor extends Mapa<Integer> {
         posibilidad += mapaOceano.puedeUbicarse(barco, puntoAuxiliar) ? 1 : 0;
         puntoAuxiliar.setDireccion(Direccion.DERECHA);
         posibilidad += mapaOceano.puedeUbicarse(barco, puntoAuxiliar) ? 1 : 0;
-        return posibilidad;
+        return (int) (posibilidad * (CAMBIO_PUNTAJE));
     }
 
     /**
@@ -78,11 +81,14 @@ public class MapaCalor extends Mapa<Integer> {
     }
 
     public Punto getSugerencia() {
-        int mayorPosibilidad = 1; // siempre tiene al menos 1 posibilidad, así ignora los lugares 0
+        int mayorPosibilidad = 0; // siempre tiene almenos 1 posibilidad, así ignora los lugares 0
         int[] sugerencias = new int[LARGO_MAPA * LARGO_MAPA * 2];
         int sugerenciasCount = 0;
         for (int fila = 0; fila < LARGO_MAPA; fila++) {
             for (int columna = 0; columna < LARGO_MAPA; columna++) {
+                if (!mapaOceano.esCasillaDesconocida(fila, columna)) {
+                    continue;
+                }
                 int valor = mapa[fila][columna];
                 if (valor > mayorPosibilidad) {
                     mayorPosibilidad = valor;
@@ -94,6 +100,9 @@ public class MapaCalor extends Mapa<Integer> {
                     sugerenciasCount++;
                 }
             }
+        }
+        if (sugerenciasCount == 0) {
+            return null; // o lanza una excepción, o maneja el caso como prefieras
         }
         int idx = ThreadLocalRandom.current().nextInt(sugerenciasCount);
         return new Punto(sugerencias[idx * 2], sugerencias[idx * 2 + 1]);

@@ -26,7 +26,7 @@ public class Mapa<T> {
         this.iniciarMapa(valorInicial);
     }
 
-    private void iniciarMapa(T valor) {
+    protected void iniciarMapa(T valor) {
         for (int i = 0; i < LARGO_MAPA; i++) {
             Arrays.fill(mapa[i], valor);
         }
@@ -34,12 +34,12 @@ public class Mapa<T> {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("Mapa del océano:%n");
+        StringBuilder sb = new StringBuilder("Mapa del océano:\n");
         for (int i = 0; i < MAXIMO_LINEAS_STRING; i++) {
-            sb.append(Arrays.toString(mapa[i])).append("%n");
+            sb.append(Arrays.toString(mapa[i])).append("\n");
         }
         if (LARGO_MAPA > MAXIMO_LINEAS_STRING) {
-            sb.append("...%n");
+            sb.append("...\n");
         }
         return sb.toString();
     }
