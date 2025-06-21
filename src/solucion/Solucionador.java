@@ -9,11 +9,15 @@ import problema.Tablero;
 
 public class Solucionador {
     // El tablero del problema no comienza en 0, tiene una corrección de 1
-    private static final int CORRECCION = 1;
+    private static final int CORRECCION;
     private final Tablero tablero;
     private final MapaCalor mapaCalor;
     private final MapaOceano mapaOceano;
     private final Map<Character, Barco> barcos;
+
+    static {
+        CORRECCION = 1;
+    }
 
     public Solucionador(Tablero tablero, int largoTablero, Map<Character, Barco> barcos) {
         this.tablero = tablero;
@@ -37,27 +41,26 @@ public class Solucionador {
         return (disparo != '0' && disparo != 'X');
     }
 
-    private char disparar(Punto punto) {
-        char disparo = this.tablero.disparo(punto.getFila() + CORRECCION, punto.getColumna() + CORRECCION);
-        this.mapaOceano.marcar(punto, disparo);
+    private char disparar(Punto sugerencia) {
+        char disparo = this.tablero.disparo(sugerencia.getFila() + CORRECCION, sugerencia.getColumna() + CORRECCION);
+        this.mapaOceano.marcar(sugerencia, disparo);
         Barco barco = barcos.get(disparo);
         if (barco != null) {
             barco.quitarVida();
         }
-        mapaCalor.actualizarMapaCercano(barcos, punto);
-
+        mapaCalor.actualizarMapaCercano(barcos, sugerencia);
         return disparo;
     }
 
-    private void hundirBarco(Punto puntoInicialImpacto, char nombreBarco) {
+    private void hundirBarco(Punto puntoInicial, char nombreBarco) {
         Barco barco = barcos.get(nombreBarco);
         if (barco == null) {
             return;
         }
-        Punto puntoActualDisparo = new Punto(puntoInicialImpacto);
+        Punto puntoActualDisparo = new Punto(puntoInicial);
         char resultadoDisparo;
         while (barco.getVida() > 0) {
-            puntoActualDisparo = mapaCalor.getSugerenciaFocalizada(puntoInicialImpacto, puntoActualDisparo);
+            puntoActualDisparo = mapaCalor.getSugerenciaFocalizada(puntoInicial, puntoActualDisparo);
             resultadoDisparo = disparar(puntoActualDisparo);
             if (resultadoDisparo != barco.getNombre()) {
                 if (esDisparoExitoso(resultadoDisparo)) {
@@ -67,7 +70,7 @@ public class Solucionador {
                 if (puntoActualDisparo.getDireccion() != null) {
                     direccionOpuesta = puntoActualDisparo.getDireccion().direccionOpuesta();
                 }
-                puntoActualDisparo = new Punto(puntoInicialImpacto, direccionOpuesta);
+                puntoActualDisparo = new Punto(puntoInicial, direccionOpuesta);
             }
         }
         this.barcos.remove(barco.getNombre());

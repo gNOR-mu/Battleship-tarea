@@ -14,11 +14,12 @@ public enum Direccion {
 
     public Direccion direccionOpuesta() {
         return switch (this) {
-            case IZQUIERDA -> DERECHA;
-            case DERECHA -> IZQUIERDA;
             case ARRIBA -> ABAJO;
             case ABAJO -> ARRIBA;
+            case IZQUIERDA -> DERECHA;
+            case DERECHA -> IZQUIERDA;
         };
+
     }
 
     public Direccion direccionSentidoOpuestoAleatorio() {

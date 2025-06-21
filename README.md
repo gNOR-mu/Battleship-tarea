@@ -2,9 +2,16 @@
 JDK: 21
 
 # Nota
-- El objetivo principal de la tarea es resolver en menos de 50 tiros (cumplido: promedio en 42.0 tiros).
+- El objetivo principal de la tarea es resolver en menos de 50 tiros <span style="color: green"> (Cumplido: promedio en 40.5 tiros) </span>)
 - Adicionalmente me quiero enfocar en resolver los 500 000 tableros en menos de 1 segundo sin importar el tipo de optimización que conlleve.
-  
+Actualmente: 
+<span style="color: green">
+```
+Tiempo de ejecucion: 1,436 segundos
+Tiempo creando Tableros: 0,206 segundos
+Tiempo resolviendo 1,230 segundos 
+```
+</span>
 # Pendiente
 Agregar verificación de si es posible ubicar el barco en una determinada línea, con esto debería bajar al menos 1 disparo.
 
