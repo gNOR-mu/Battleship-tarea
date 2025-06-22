@@ -17,6 +17,7 @@ java -cp bin solucion.App
 
 # Nota
   ✅ El objetivo principal de la tarea es resolver en menos de 50 tiros.  
+ ❕ Adicionalmente hay que investigar la forma de seguir reduciendo el promedio. 
  ❕ Adicionalmente me quiero enfocar en resolver los 500 000 tableros en menos de 1 segundo sin importar el tipo de optimización que conlleve (o código legible).
 
 
@@ -32,8 +33,10 @@ Tiempo creando Tableros: 0,137 segundos
 
 Tiempo resolviendo 1,689 segundos
 
-# Pendiente
-Agregar verificación de si es posible ubicar el barco en una determinada línea, con esto debería bajar al menos 1 disparo.
+![image](imagenes/grafico_disparos.png)
+
+![image](imagenes/grafico_torta_disparos.png)
+
 
 # Enunciado
 PROYECTO:
