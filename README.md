@@ -1,6 +1,20 @@
 # JDK
 JDK: 21
 
+Compilación
+
+
+```
+javac -d bin -cp src src/problema/*.java src/solucion/*.java src/solucion/enumerados/*.java src/solucion/mapa/*.java
+```
+
+
+Ejecución
+
+```
+java -cp bin solucion.App
+```
+
 # Nota
   ✅ El objetivo principal de la tarea es resolver en menos de 50 tiros.  
  ❕ Adicionalmente me quiero enfocar en resolver los 500 000 tableros en menos de 1 segundo sin importar el tipo de optimización que conlleve (o código legible).
