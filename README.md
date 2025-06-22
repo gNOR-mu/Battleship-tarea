@@ -5,13 +5,18 @@ JDK: 21
   ✅ El objetivo principal de la tarea es resolver en menos de 50 tiros.  
  ❕ Adicionalmente me quiero enfocar en resolver los 500 000 tableros en menos de 1 segundo sin importar el tipo de optimización que conlleve (o código legible).
 
-**Resumen para 500 000 tableros en i5-14600k**
-Intentos: 19969594
-Intentos promedio: <span style="color: green">39,9392</span>
-Tiempo de ejecucion: 1,442 segundos
-Tiempo creando Tableros: 0,207 segundos
-Tiempo resolviendo: <span style="color: orange">1,235</span> segundos
 
+**Resumen para 500 000 tableros en i5-14600k**
+
+INFO: Intentos: 18976451
+
+Intentos promedio: 37,9529
+
+Tiempo de ejecucion: 1,826 segundos
+
+Tiempo creando Tableros: 0,137 segundos
+
+Tiempo resolviendo 1,689 segundos
 
 # Pendiente
 Agregar verificación de si es posible ubicar el barco en una determinada línea, con esto debería bajar al menos 1 disparo.

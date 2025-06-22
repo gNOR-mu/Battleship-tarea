@@ -1,5 +1,4 @@
 package problema;
-
 public class Tablero{
   static java.util.Random generator = new java.util.Random();
   private char [][] t;
@@ -64,7 +63,7 @@ public class Tablero{
     //Imprimir();
     return intentos;
   }
-  public void Imprimir(){
+  private void Imprimir(){
     for(int i=1;i<t[0].length-1;i++){
       for(int j=1;j<t.length-1;j++)
       	System.out.print(t[i][j] + " ");

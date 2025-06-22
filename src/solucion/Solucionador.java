@@ -30,7 +30,6 @@ public class Solucionador {
         // calculo 1 vez y luego itero sobre los disparos
         this.mapaCalor.actualizarMapa(barcos);
         while (this.tablero.ganar() == 0) {
-            // this.mapaCalor.actualizarMapa(barcos); //versión alternativa, empeora el promedio de disparos +2pt
             Punto sugerencia = this.mapaCalor.getSugerencia();
             char disparo = disparar(sugerencia);
             if (esDisparoExitoso(disparo)) {
@@ -49,6 +48,9 @@ public class Solucionador {
         Barco barco = barcos.get(disparo);
         if (barco != null) {
             barco.quitarVida();
+            if (barco.getVida() == 0) {
+                this.barcos.remove(disparo);
+            }
         }
         mapaCalor.actualizarMapaCercano(barcos, sugerencia);
         return disparo;
@@ -72,6 +74,5 @@ public class Solucionador {
                 puntoActualDisparo = new Punto(puntoInicial, direccionOpuesta);
             }
         }
-        this.barcos.remove(barco.getNombre());
     }
 }

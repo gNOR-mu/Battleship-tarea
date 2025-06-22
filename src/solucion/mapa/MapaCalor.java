@@ -9,12 +9,13 @@ import solucion.enumerados.Direccion;
 
 public class MapaCalor extends Mapa<Integer> {
     private MapaOceano mapaOceano;
-    private static final double CAMBIO_PUNTAJE; // sirve como ajuste de puntaje, afecta el promedio
-    private static final double PENALIZACION_BORDE;
+
+    /* Variar el puntaje de mapa de calor calculado afecta el promedio de disparos, lo puede mejorar o empeorar */
+    private static final double CAMBIO_PUNTAJE_CALOR;
 
     static {
-        CAMBIO_PUNTAJE = 1.25;
-        PENALIZACION_BORDE = 1.189;
+        // mejor 1.102 con promedio 37,9439
+        CAMBIO_PUNTAJE_CALOR = 1.102;
     }
 
     public MapaCalor(int largoTablero, MapaOceano mapaOceano) {
@@ -30,11 +31,9 @@ public class MapaCalor extends Mapa<Integer> {
                 punto.setColumna(columna);
                 int posibilidad = 0;
                 for (Barco barco : barcos.values()) {
-                    posibilidad += posibilidadesBarcos(barco, punto); // como debe ser promedia 41.6
-                    // posibilidad = posibilidadesBarcos(barco, punto); //curioso que promedia 40.3
+                    posibilidad += posibilidadesBarcos(barco, punto);
                 }
-                // mapa[fila][columna] += posibilidad;
-                marcar(punto, posibilidad);// llegando a las conclusiones correctas por las razones equivocadas
+                marcar(punto, posibilidad);
             }
         }
     }
@@ -49,24 +48,20 @@ public class MapaCalor extends Mapa<Integer> {
         posibilidad += mapaOceano.puedeUbicarse(barco, puntoAuxiliar) ? 1 : 0;
         puntoAuxiliar.setDireccion(Direccion.DERECHA);
         posibilidad += mapaOceano.puedeUbicarse(barco, puntoAuxiliar) ? 1 : 0;
-        return (int) (posibilidad * CAMBIO_PUNTAJE * penalizacionBorde(punto));
+        return (int) ((3.5 * posibilidad * CAMBIO_PUNTAJE_CALOR * penalizacionBorde(punto)) / 0.1);
     }
 
     private double penalizacionBorde(Punto punto) {
         int fila = punto.getFila();
         int columna = punto.getColumna();
-        int distArriba = fila;
-        int distAbajo = LARGO_MAPA - 1 - fila;
-        int distIzquierda = columna;
-        int distDerecha = LARGO_MAPA - 1 - columna;
-        int minDist = Math.min(Math.min(distArriba, distAbajo), Math.min(distIzquierda, distDerecha));
-        // Penalización suave: cuanto más lejos del borde, mayor el factor (puedes ajustar el +1 o el divisor)
-        return PENALIZACION_BORDE + (minDist / (double) LARGO_MAPA);
+        int minDist = Math.min(Math.min(fila, LARGO_MAPA - 1 - fila), Math.min(columna, LARGO_MAPA - 1 - columna));
+        return Math.pow((0.42 + minDist) / (double) LARGO_MAPA, 1.5);
     }
 
     /**
-     * reduce aprox 1.5 disparos en comparación a actualizar el mapa a cada rato
-     * los disparos empeoran al recorrer la vida de cada barco -> necesita un cambio de estrategia para aplicarla
+     * 
+     * @param barcos  Los barcos que siguen en juego
+     * @param disparo Último disparo
      */
     public void actualizarMapaCercano(Map<Character, Barco> barcos, Punto disparo) {
         int[][] direcciones = {
@@ -95,7 +90,7 @@ public class MapaCalor extends Mapa<Integer> {
     }
 
     public Punto getSugerencia() {
-        int mayorPosibilidad = 0; // siempre tiene almenos 1 posibilidad, así ignora los lugares 0
+        int mayorPosibilidad = 0;
         int[] sugerencias = new int[LARGO_MAPA * LARGO_MAPA * 2];
         int sugerenciasCount = 0;
         for (int fila = 0; fila < LARGO_MAPA; fila++) {
@@ -116,7 +111,7 @@ public class MapaCalor extends Mapa<Integer> {
             }
         }
         if (sugerenciasCount == 0) {
-            return null; // o lanza una excepción, o maneja el caso como prefieras
+            return null;
         }
         int idx = ThreadLocalRandom.current().nextInt(sugerenciasCount);
         return new Punto(sugerencias[idx * 2], sugerencias[idx * 2 + 1]);
@@ -142,5 +137,4 @@ public class MapaCalor extends Mapa<Integer> {
         }
         return null;
     }
-
 }

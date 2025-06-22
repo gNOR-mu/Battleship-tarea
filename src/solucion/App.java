@@ -6,15 +6,11 @@ import java.util.stream.IntStream;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import problema.Tablero;
 
 public class App {
     public static void main(String[] args) throws Exception {
-        Logger logger = Logger.getLogger(App.class.getName());
-
         final int LARGO_TABLERO = 10;
         final int CANTIDAD_JUEGOS = 500_000;
         final int CANTIDAD_HILOS = Runtime.getRuntime().availableProcessors();
@@ -44,15 +40,12 @@ public class App {
         double tiempoTermino = ((double) System.currentTimeMillis() - startTime) / 1000;
         double tiempoTableros = (double) tiempoTotalTablero.get() / 1_000_000_000 / CANTIDAD_HILOS;
         double tiempoResolviendo = tiempoTermino - tiempoTableros;
-        if (logger.isLoggable(Level.INFO)) {
-            logger.log(Level.INFO, String.format(
-                    "Intentos: %d%nIntentos promedio: %.4f%nTiempo de ejecucion: %.3f segundos%nTiempo creando Tableros: %.3f segundos%nTiempo resolviendo %.3f segundos ",
-                    intentos.get(),
-                    (double) intentos.get() / CANTIDAD_JUEGOS,
-                    tiempoTermino,
-                    tiempoTableros, // este tiempo ya depende del problema base.
-                    tiempoResolviendo));
-        }
+
+        System.out.format("Intentos: %d%n", intentos.get());
+        System.out.format("Intentos promedio: %.4f%n", (double) intentos.get() / CANTIDAD_JUEGOS);
+        System.out.format("Tiempo de ejecucion: %.3f segundos%n", tiempoTermino);
+        System.out.format("Tiempo creando Tableros: %.3f segundos%n", tiempoTableros);
+        System.out.format("Tiempo resolviendo: %.3f segundos%n", tiempoResolviendo);
     }
 
     public static Map<Character, Barco> crearBarcos() {
