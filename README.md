@@ -18,7 +18,8 @@ java -cp bin solucion.App
 # Nota
   ✅ El objetivo principal de la tarea es resolver en menos de 50 tiros.  
  ❕ Adicionalmente hay que investigar la forma de seguir reduciendo el promedio. 
- ❕ Adicionalmente me quiero enfocar en resolver los 500 000 tableros en menos de 1 segundo sin importar el tipo de optimización que conlleve (o código legible).
+
+ ❕ También me quiero enfocar en resolver los 500 000 tableros en menos de 1 segundo sin importar el tipo de optimización que conlleve (o código legible).
 
 
 **Resumen para 500 000 tableros en i5-14600k**
@@ -35,8 +36,11 @@ Tiempo resolviendo 1,689 segundos
 
 ![image](imagenes/grafico_disparos.png)
 
+A continuación se presenta un gráfico de torta con los resultados de disparos mayor a 0.
+
 ![image](imagenes/grafico_torta_disparos.png)
 
+ 
 
 # Enunciado
 PROYECTO:
