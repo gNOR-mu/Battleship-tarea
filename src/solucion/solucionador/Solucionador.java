@@ -22,22 +22,24 @@ public final class Solucionador extends SolucionadorBase {
         this.mapaCalor = new MapaCalor(largoTablero, this.mapaOceano);
     }
 
+    @Override
     public void solucionar() {
         // calculo 1 vez y luego itero sobre los disparos
         this.mapaCalor.actualizarMapa(barcos);
-        while (this.tablero.ganar() == 0) {
+        do {
             Coordenada sugerencia = this.mapaCalor.getSugerencia();
             char disparo = disparar(sugerencia);
             if (esDisparoExitoso(disparo)) {
                 hundirBarco(sugerencia, disparo);
             }
-        }
+        } while (this.tablero.ganar() == 0);
     }
 
+    @Override
     protected char disparar(Coordenada sugerencia) {
         char disparo = this.tablero.disparo(sugerencia.getFila() + CORRECCION, sugerencia.getColumna() + CORRECCION);
-        this.mapaOceano.marcar(sugerencia, disparo);
         Barco barco = barcos.get(disparo);
+        this.mapaOceano.marcar(sugerencia, disparo);
         if (barco != null) {
             barco.quitarVida();
             if (barco.getVida() == 0) {
@@ -48,6 +50,7 @@ public final class Solucionador extends SolucionadorBase {
         return disparo;
     }
 
+    @Override
     protected void hundirBarco(Coordenada coordenadaInicial, char nombreBarco) {
         Barco barco = barcos.get(nombreBarco);
         Coordenada coordenadaActual = new Coordenada(coordenadaInicial);
@@ -56,10 +59,10 @@ public final class Solucionador extends SolucionadorBase {
             coordenadaActual = mapaCalor.getSugerenciaFocalizada(coordenadaInicial, coordenadaActual);
             resultadoDisparo = disparar(coordenadaActual);
             if (resultadoDisparo != barco.getNombre()) {
+                Direccion direccionOpuesta = null;
                 if (esDisparoExitoso(resultadoDisparo)) {
                     hundirBarco(new Coordenada(coordenadaActual), resultadoDisparo);
                 }
-                Direccion direccionOpuesta = null;
                 if (coordenadaActual.getDireccion() != null) {
                     direccionOpuesta = coordenadaActual.getDireccion().direccionOpuesta();
                 }

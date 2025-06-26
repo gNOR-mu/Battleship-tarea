@@ -2,7 +2,7 @@ package solucion.solucionador;
 
 import solucion.posicion.Coordenada;
 
-public abstract sealed class SolucionadorBase implements Solucion permits Solucionador {
+public abstract sealed class SolucionadorBase permits Solucionador {
     protected static final char AGUA;
     protected static final char DISPARO_FALLIDO;
     protected static final int CORRECCION;
@@ -13,12 +13,14 @@ public abstract sealed class SolucionadorBase implements Solucion permits Soluci
         CORRECCION = 1;
     }
 
-    protected abstract void hundirBarco(Coordenada coordenadaInicial, char nombreBarco);
+    public abstract void solucionar();
+
+    protected abstract void hundirBarco(Coordenada puntoInicial, char nombreBarco);
 
     protected abstract char disparar(Coordenada sugerencia);
 
-    protected boolean esDisparoExitoso(char disparo) {
-        return (disparo != AGUA && disparo != DISPARO_FALLIDO);
+    protected boolean esDisparoExitoso(char letraDisparo) {
+        return (letraDisparo != AGUA && letraDisparo != DISPARO_FALLIDO);
     }
 
 }

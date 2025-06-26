@@ -35,11 +35,11 @@ public class Mapa<T> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Mapa del océano:\n");
-        for (int i = 0; i < MAXIMO_LINEAS_STRING; i++) {
+        for (int i = 0; i < LARGO_MAPA && i < MAXIMO_LINEAS_STRING; i++) {
             sb.append(Arrays.toString(mapa[i])).append("\n");
         }
         if (LARGO_MAPA > MAXIMO_LINEAS_STRING) {
-            sb.append("...\n");
+            sb.append(".\n\n.\n.\n");
         }
         return sb.toString();
     }
@@ -73,6 +73,13 @@ public class Mapa<T> {
                 && fila < LARGO_MAPA
                 && columna >= 0
                 && columna < LARGO_MAPA);
+    }
+
+    protected boolean esBorde(Coordenada coordenada) {
+        int fila = coordenada.getFila();
+        int columna = coordenada.getColumna();
+        int fin = LARGO_MAPA - 1;
+        return fila == 0 || fila == fin || columna == 0 || columna == fin;
     }
 
 }

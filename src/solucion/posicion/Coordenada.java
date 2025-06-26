@@ -3,10 +3,11 @@ package solucion.posicion;
 import solucion.enumerados.Direccion;
 
 public final class Coordenada extends Punto {
-    private Direccion direccion = null;
+    private Direccion direccion;
 
     public Coordenada(int fila, int columna) {
         super(fila, columna);
+        this.direccion = null;
     }
 
     public Coordenada(Coordenada otro) {

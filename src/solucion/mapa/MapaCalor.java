@@ -14,12 +14,6 @@ public class MapaCalor extends Mapa<Integer> {
      * Variar el puntaje de mapa de calor calculado afecta el promedio de disparos,
      * lo puede mejorar o empeorar
      */
-    private static final double CAMBIO_PUNTAJE_CALOR;
-
-    static {
-        // mejor 1.102 con promedio 37,9439
-        CAMBIO_PUNTAJE_CALOR = 1.102;
-    }
 
     public MapaCalor(int largoTablero, MapaOceano mapaOceano) {
         super(largoTablero, Integer.class, 0);
@@ -41,7 +35,21 @@ public class MapaCalor extends Mapa<Integer> {
         }
     }
 
+    /**
+     * * El tablero del problema propuesto no ubica completamente un barco en la
+     * primera ni última fila o columna, puede pasar que un extremo del barco esté
+     * ubicado en un borde, sin embargo las posibilidades de ocurrencia son menores
+     * a las de que sea ubicado en otra parte, por ello es viable dejar los bordes
+     * como 0, para reducir el número de intentos
+     * 
+     * @param barco      Barco a iterar para calcular su coordenada de calor
+     * @param coordenada Coordenada sobre la que se iterará
+     * @return
+     */
     private int posibilidadesBarcos(Barco barco, Coordenada coordenada) {
+        if (esBorde(coordenada)) {
+            return 0;
+        }
         int posibilidad = 0;
         Coordenada coordenadaAuxiliar = new Coordenada(coordenada);
         coordenadaAuxiliar.setDireccion(Direccion.ARRIBA);
@@ -52,8 +60,10 @@ public class MapaCalor extends Mapa<Integer> {
         posibilidad += mapaOceano.puedeUbicarse(barco, coordenadaAuxiliar) ? 1 : 0;
         coordenadaAuxiliar.setDireccion(Direccion.DERECHA);
         posibilidad += mapaOceano.puedeUbicarse(barco, coordenadaAuxiliar) ? 1 : 0;
-        return (int) ((3.5 * posibilidad * CAMBIO_PUNTAJE_CALOR * penalizacionBorde(coordenada)) / 0.1);
+        return posibilidad;
     }
+
+    
 
     private double penalizacionBorde(Coordenada coordenada) {
         int fila = coordenada.getFila();
@@ -63,6 +73,7 @@ public class MapaCalor extends Mapa<Integer> {
     }
 
     /**
+     * Actualiza únicamente 1 casilla alrededor de la coordenada de disparo.
      * 
      * @param barcos  Los barcos que siguen en juego
      * @param disparo Último disparo

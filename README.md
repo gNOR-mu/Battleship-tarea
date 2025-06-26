@@ -36,11 +36,6 @@ Tiempo resolviendo 1,689 segundos
 
 ![image](imagenes/grafico_disparos.png)
 
-A continuación se presenta un gráfico de torta con los resultados de disparos mayor a 0.
-
-![image](imagenes/grafico_torta_disparos.png)
-
- 
 
 # Enunciado
 PROYECTO:
