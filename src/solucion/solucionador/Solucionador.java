@@ -1,23 +1,19 @@
-package solucion;
+package solucion.solucionador;
 
 import java.util.Map;
 
+import solucion.Barco;
 import solucion.enumerados.Direccion;
 import solucion.mapa.MapaCalor;
 import solucion.mapa.MapaOceano;
+import solucion.posicion.Coordenada;
 import problema.Tablero;
 
-public class Solucionador {
-    // El tablero del problema no comienza en 0, tiene una corrección de 1
-    private static final int CORRECCION;
+public final class Solucionador extends SolucionadorBase {
     private final Tablero tablero;
     private final MapaCalor mapaCalor;
     private final MapaOceano mapaOceano;
     private final Map<Character, Barco> barcos;
-
-    static {
-        CORRECCION = 1;
-    }
 
     public Solucionador(Tablero tablero, int largoTablero, Map<Character, Barco> barcos) {
         this.tablero = tablero;
@@ -30,7 +26,7 @@ public class Solucionador {
         // calculo 1 vez y luego itero sobre los disparos
         this.mapaCalor.actualizarMapa(barcos);
         while (this.tablero.ganar() == 0) {
-            Punto sugerencia = this.mapaCalor.getSugerencia();
+            Coordenada sugerencia = this.mapaCalor.getSugerencia();
             char disparo = disparar(sugerencia);
             if (esDisparoExitoso(disparo)) {
                 hundirBarco(sugerencia, disparo);
@@ -38,11 +34,7 @@ public class Solucionador {
         }
     }
 
-    private boolean esDisparoExitoso(char disparo) {
-        return (disparo != '0' && disparo != 'X');
-    }
-
-    private char disparar(Punto sugerencia) {
+    protected char disparar(Coordenada sugerencia) {
         char disparo = this.tablero.disparo(sugerencia.getFila() + CORRECCION, sugerencia.getColumna() + CORRECCION);
         this.mapaOceano.marcar(sugerencia, disparo);
         Barco barco = barcos.get(disparo);
@@ -56,22 +48,23 @@ public class Solucionador {
         return disparo;
     }
 
-    private void hundirBarco(Punto puntoInicial, char nombreBarco) {
+    protected void hundirBarco(Coordenada coordenadaInicial, char nombreBarco) {
         Barco barco = barcos.get(nombreBarco);
-        Punto puntoActualDisparo = new Punto(puntoInicial);
+        Coordenada coordenadaActual = new Coordenada(coordenadaInicial);
         char resultadoDisparo;
         while (barco.getVida() > 0) {
-            puntoActualDisparo = mapaCalor.getSugerenciaFocalizada(puntoInicial, puntoActualDisparo);
-            resultadoDisparo = disparar(puntoActualDisparo);
+            coordenadaActual = mapaCalor.getSugerenciaFocalizada(coordenadaInicial, coordenadaActual);
+            resultadoDisparo = disparar(coordenadaActual);
             if (resultadoDisparo != barco.getNombre()) {
                 if (esDisparoExitoso(resultadoDisparo)) {
-                    hundirBarco(new Punto(puntoActualDisparo), resultadoDisparo);
+                    hundirBarco(new Coordenada(coordenadaActual), resultadoDisparo);
                 }
                 Direccion direccionOpuesta = null;
-                if (puntoActualDisparo.getDireccion() != null) {
-                    direccionOpuesta = puntoActualDisparo.getDireccion().direccionOpuesta();
+                if (coordenadaActual.getDireccion() != null) {
+                    direccionOpuesta = coordenadaActual.getDireccion().direccionOpuesta();
                 }
-                puntoActualDisparo = new Punto(puntoInicial, direccionOpuesta);
+                coordenadaActual = new Coordenada(coordenadaInicial);
+                coordenadaActual.setDireccion(direccionOpuesta);
             }
         }
     }

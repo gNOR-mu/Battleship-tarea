@@ -2,8 +2,8 @@ package solucion.mapa;
 
 import java.util.Arrays;
 
-import solucion.Punto;
 import solucion.enumerados.Direccion;
+import solucion.posicion.Coordenada;
 
 import java.lang.reflect.Array;
 
@@ -45,28 +45,27 @@ public class Mapa<T> {
     }
 
     protected boolean esDireccionValida(Direccion direccion, int largoBarco, int valorEje) {
-        if (direccion == Direccion.ARRIBA || direccion == Direccion.IZQUIERDA) {
-            return valorEje - (largoBarco - 1) >= 0;
-        } else if (direccion == Direccion.ABAJO || direccion == Direccion.DERECHA) {
-            return valorEje + largoBarco <= LARGO_MAPA;
-        }
-        return false;
+        return switch (direccion) {
+            case ARRIBA, IZQUIERDA -> valorEje - (largoBarco - 1) >= 0;
+            case ABAJO, DERECHA -> valorEje + largoBarco <= LARGO_MAPA;
+            default -> false;
+        };
     }
 
-    public void marcar(Punto punto, T valor) {
-        int fila = punto.getFila();
-        int columna = punto.getColumna();
+    public void marcar(Coordenada coordenada, T valor) {
+        int fila = coordenada.getFila();
+        int columna = coordenada.getColumna();
         if (esCoordenadaValida(fila, columna)) {
             mapa[fila][columna] = valor;
         }
     }
 
-    protected boolean esCoordenadaValida(Punto punto) {
-        return (punto != null
-                && punto.getFila() >= 0
-                && punto.getFila() < LARGO_MAPA
-                && punto.getColumna() >= 0
-                && punto.getColumna() < LARGO_MAPA);
+    protected boolean esCoordenadaValida(Coordenada coordenada) {
+        return (coordenada != null
+                && coordenada.getFila() >= 0
+                && coordenada.getFila() < LARGO_MAPA
+                && coordenada.getColumna() >= 0
+                && coordenada.getColumna() < LARGO_MAPA);
     }
 
     protected boolean esCoordenadaValida(int fila, int columna) {

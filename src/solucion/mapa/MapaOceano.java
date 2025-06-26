@@ -1,8 +1,8 @@
 package solucion.mapa;
 
 import solucion.Barco;
-import solucion.Punto;
 import solucion.enumerados.Direccion;
+import solucion.posicion.Coordenada;
 
 public class MapaOceano extends Mapa<Character> {
     private static final char DESCONOCIDO;
@@ -15,21 +15,22 @@ public class MapaOceano extends Mapa<Character> {
         super(largoTablero, Character.class, DESCONOCIDO);
     }
 
-    public boolean esCasillaDesconocida(Punto punto) {
-        return mapa[punto.getFila()][punto.getColumna()] == DESCONOCIDO;
+    public boolean esCasillaDesconocida(Coordenada coordenada) {
+        return mapa[coordenada.getFila()][coordenada.getColumna()] == DESCONOCIDO;
     }
+
     public boolean esCasillaDesconocida(int fila, int columna) {
         return mapa[fila][columna] == DESCONOCIDO;
     }
 
-    public boolean esPosicionDelBarco(Punto punto, char nombreBarco) {
-        return mapa[punto.getFila()][punto.getColumna()] == nombreBarco;
+    public boolean esPosicionDelBarco(Coordenada coordenada, char nombreBarco) {
+        return mapa[coordenada.getFila()][coordenada.getColumna()] == nombreBarco;
     }
 
-    public boolean puedeUbicarse(Barco barco, Punto punto) {
-        Direccion direccion = punto.getDireccion();
+    public boolean puedeUbicarse(Barco barco, Coordenada coordenada) {
+        Direccion direccion = coordenada.getDireccion();
         boolean direccionHorizontal = direccion == Direccion.DERECHA || direccion == Direccion.IZQUIERDA;
-        int valorEje = (direccionHorizontal) ? punto.getColumna() : punto.getFila();
+        int valorEje = (direccionHorizontal) ? coordenada.getColumna() : coordenada.getFila();
         int largo = barco.getLargo();
         if (!esDireccionValida(direccion, largo, valorEje)) {
             return false;
@@ -37,11 +38,11 @@ public class MapaOceano extends Mapa<Character> {
         int cambio = (direccion == Direccion.DERECHA || direccion == Direccion.ABAJO) ? 1 : -1;
         char valor;
         for (int i = 0; i < largo; i++) {
-            int nuevoValor = valorEje+ (i * cambio);
+            int nuevoValor = valorEje + (i * cambio);
             if (direccionHorizontal) {
-                valor = mapa[punto.getFila()][nuevoValor];
+                valor = mapa[coordenada.getFila()][nuevoValor];
             } else {
-                valor = mapa[nuevoValor][punto.getColumna()];
+                valor = mapa[nuevoValor][coordenada.getColumna()];
             }
             if (valor != DESCONOCIDO && valor != barco.getNombre()) {
                 return false;

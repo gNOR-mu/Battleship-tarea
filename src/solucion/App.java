@@ -8,6 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import problema.Tablero;
+import solucion.solucionador.Solucionador;
 
 public class App {
     public static void main(String[] args) throws Exception {
