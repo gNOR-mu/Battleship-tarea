@@ -24,15 +24,15 @@ java -cp bin solucion.App
 
 **Resumen para 500 000 tableros en i5-14600k**
 
-INFO: Intentos: 18976451
+Intentos: 18776809
 
-Intentos promedio: 37,9529
+Intentos promedio: 37,5536
 
-Tiempo de ejecucion: 1,826 segundos
+Tiempo de ejecucion: 1,512 segundos
 
-Tiempo creando Tableros: 0,137 segundos
+Tiempo creando Tableros: 0,483 segundos
 
-Tiempo resolviendo 1,689 segundos
+Tiempo resolviendo: 1,029 segundos
 
 ![image](imagenes/grafico_disparos.png)
 
