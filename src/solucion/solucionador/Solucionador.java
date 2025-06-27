@@ -2,12 +2,12 @@ package solucion.solucionador;
 
 import java.util.Map;
 
+import problema.Tablero;
 import solucion.Barco;
 import solucion.enumerados.Direccion;
 import solucion.mapa.MapaCalor;
 import solucion.mapa.MapaOceano;
 import solucion.posicion.Coordenada;
-import problema.Tablero;
 
 public final class Solucionador extends SolucionadorBase {
     private final Tablero tablero;
@@ -22,53 +22,64 @@ public final class Solucionador extends SolucionadorBase {
         this.mapaCalor = new MapaCalor(largoTablero, this.mapaOceano);
     }
 
+    /**
+     * Ejecuta el solucionador del tablero, no termina la ejecución mientras no se
+     * hayan hundido todos los barcos.
+     */
     @Override
     public void solucionar() {
-        // calculo 1 vez y luego itero sobre los disparos
         this.mapaCalor.actualizarMapa(barcos);
-        do {
+        while (this.tablero.ganar() == 0) {
             Coordenada sugerencia = this.mapaCalor.getSugerencia();
             char disparo = disparar(sugerencia);
             if (esDisparoExitoso(disparo)) {
                 hundirBarco(sugerencia, disparo);
             }
-        } while (this.tablero.ganar() == 0);
+        }
     }
 
+    /**
+     * Realiza el disparo hacia el tablero. 
+     * <p> Actualiza elmapa de calor y crea la marca en el mapa oceano.
+     * @param sugerencia
+     * @return char
+     */
     @Override
     protected char disparar(Coordenada sugerencia) {
         char disparo = this.tablero.disparo(sugerencia.getFila() + CORRECCION, sugerencia.getColumna() + CORRECCION);
-        Barco barco = barcos.get(disparo);
-        this.mapaOceano.marcar(sugerencia, disparo);
-        if (barco != null) {
-            barco.quitarVida();
-            if (barco.getVida() == 0) {
-                this.barcos.remove(disparo);
-            }
-        }
         mapaCalor.actualizarMapaCercano(barcos, sugerencia);
+        this.mapaOceano.marcar(sugerencia, disparo);
         return disparo;
     }
 
+    /**
+     * Hunde el barco encontrado, si en el proceso encuentra uno nuevo lo hunde de forma recursiva
+     * @param coordenadaInicial Coordenada en donde se encontró el barco
+     * @param nombreBarco Nombre del barco
+     */
     @Override
     protected void hundirBarco(Coordenada coordenadaInicial, char nombreBarco) {
+        if (!barcos.containsKey(nombreBarco)) {
+            return;
+        }
         Barco barco = barcos.get(nombreBarco);
         Coordenada coordenadaActual = new Coordenada(coordenadaInicial);
         char resultadoDisparo;
+        barco.quitarVida();
         while (barco.getVida() > 0) {
             coordenadaActual = mapaCalor.getSugerenciaFocalizada(coordenadaInicial, coordenadaActual);
             resultadoDisparo = disparar(coordenadaActual);
-            if (resultadoDisparo != barco.getNombre()) {
-                Direccion direccionOpuesta = null;
+            if (resultadoDisparo != nombreBarco) {
                 if (esDisparoExitoso(resultadoDisparo)) {
                     hundirBarco(new Coordenada(coordenadaActual), resultadoDisparo);
                 }
-                if (coordenadaActual.getDireccion() != null) {
-                    direccionOpuesta = coordenadaActual.getDireccion().direccionOpuesta();
-                }
+                Direccion direccionOpuesta = coordenadaActual.getDireccion().direccionOpuesta();
+                coordenadaInicial.setDireccion(direccionOpuesta);
                 coordenadaActual = new Coordenada(coordenadaInicial);
-                coordenadaActual.setDireccion(direccionOpuesta);
+            } else {
+                barco.quitarVida();
             }
         }
+        barcos.remove(nombreBarco);
     }
 }

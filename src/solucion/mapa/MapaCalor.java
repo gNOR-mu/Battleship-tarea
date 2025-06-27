@@ -10,21 +10,22 @@ import solucion.posicion.Coordenada;
 public class MapaCalor extends Mapa<Integer> {
     private MapaOceano mapaOceano;
 
-    /*
-     * Variar el puntaje de mapa de calor calculado afecta el promedio de disparos,
-     * lo puede mejorar o empeorar
-     */
-
     public MapaCalor(int largoTablero, MapaOceano mapaOceano) {
         super(largoTablero, Integer.class, 0);
         this.mapaOceano = mapaOceano;
     }
 
+    /**
+     * Actualiza el mapa de calor sumando las posibilidades de ubicación de cada
+     * barco en cada celda del tablero, excluyendo los bordes.
+     *
+     * @param barcos mapa de barcos activos en el juego
+     */
     public void actualizarMapa(Map<Character, Barco> barcos) {
         Coordenada coordenada = new Coordenada(0, 0);
-        for (int fila = 0; fila < LARGO_MAPA; fila++) {
+        for (int fila = 1; fila < LARGO_MAPA - 1; fila++) {
             coordenada.setFila(fila);
-            for (int columna = 0; columna < LARGO_MAPA; columna++) {
+            for (int columna = 0; columna < LARGO_MAPA - 1; columna++) {
                 coordenada.setColumna(columna);
                 int posibilidad = 0;
                 for (Barco barco : barcos.values()) {
@@ -36,15 +37,19 @@ public class MapaCalor extends Mapa<Integer> {
     }
 
     /**
-     * * El tablero del problema propuesto no ubica completamente un barco en la
+     * Calcula la cantidad de formas en que un barco puede ubicarse en una
+     * coordenada dada,
+     * <p>
+     * El tablero del problema propuesto no ubica completamente un barco en la
      * primera ni última fila o columna, puede pasar que un extremo del barco esté
      * ubicado en un borde, sin embargo las posibilidades de ocurrencia son menores
-     * a las de que sea ubicado en otra parte, por ello es viable dejar los bordes
-     * como 0, para reducir el número de intentos
+     * a las de que sea ubicado en otra parte, ergo es viable dejar los bordes
+     * como 0, para reducir el número de intentos.
      * 
-     * @param barco      Barco a iterar para calcular su coordenada de calor
-     * @param coordenada Coordenada sobre la que se iterará
-     * @return
+     * @param barco      barco a iterar para calcular su coordenada de calor
+     * @param coordenada coordenada sobre la que se itera
+     * @return número de posibilidades para ubicar el barco en esa coordenada
+     * 
      */
     private int posibilidadesBarcos(Barco barco, Coordenada coordenada) {
         if (esBorde(coordenada)) {
@@ -63,20 +68,13 @@ public class MapaCalor extends Mapa<Integer> {
         return posibilidad;
     }
 
-    
-
-    private double penalizacionBorde(Coordenada coordenada) {
-        int fila = coordenada.getFila();
-        int columna = coordenada.getColumna();
-        int minDist = Math.min(Math.min(fila, LARGO_MAPA - 1 - fila), Math.min(columna, LARGO_MAPA - 1 - columna));
-        return Math.pow((0.42 + minDist) / LARGO_MAPA, 1.5);
-    }
-
     /**
-     * Actualiza únicamente 1 casilla alrededor de la coordenada de disparo.
-     * 
-     * @param barcos  Los barcos que siguen en juego
-     * @param disparo Último disparo
+     * Actualiza únicamente una casillas adyacentes a la coordenada de disparo,
+     * sumando las posibilidades de ubicación de los barcos en las posiciones de
+     * arriba,abajo, izquierda y derecha.
+     *
+     * @param barcos  barcos que siguen en juego
+     * @param disparo última coordenada de disparo
      */
     public void actualizarMapaCercano(Map<Character, Barco> barcos, Coordenada disparo) {
         int[][] direcciones = {
@@ -85,32 +83,33 @@ public class MapaCalor extends Mapa<Integer> {
                 { 0, -1 }, // izquierda
                 { 0, 1 } // derecha
         };
-        marcar(disparo, 0);
-
-        int disparoFila = disparo.getFila();
-        int disparoCol = disparo.getColumna();
         for (Barco barco : barcos.values()) {
             for (int i = 0; i < 4; i++) {
-                int nuevaFila = disparoFila + direcciones[i][0];
-                int nuevaColumna = disparoCol + direcciones[i][1];
+                int nuevaFila = disparo.getFila() + direcciones[i][0];
+                int nuevaColumna = disparo.getColumna() + direcciones[i][1];
                 if (!esCoordenadaValida(nuevaFila, nuevaColumna)
                         || !mapaOceano.esCasillaDesconocida(nuevaFila, nuevaColumna)) {
                     continue;
                 }
                 Coordenada coordenada = new Coordenada(nuevaFila, nuevaColumna);
-                int posibilidad = 0;
-                posibilidad += posibilidadesBarcos(barco, coordenada);
+                int posibilidad = posibilidadesBarcos(barco, coordenada);
                 marcar(coordenada, posibilidad);
             }
         }
     }
 
+    /**
+     * Obtiene una sugerencia de coordenada para disparar, eligiendo aleatoriamente
+     * entre las posiciones con mayor probabilidad según el mapa de calor.
+     *
+     * @return coordenada sugerida para el próximo disparo
+     */
     public Coordenada getSugerencia() {
         int mayorPosibilidad = 0;
-        int[] sugerencias = new int[LARGO_MAPA * LARGO_MAPA * 2];
+        int[] sugerencias = new int[(LARGO_MAPA) * (LARGO_MAPA) * 2];
         int sugerenciasCount = 0;
-        for (int fila = 0; fila < LARGO_MAPA; fila++) {
-            for (int columna = 0; columna < LARGO_MAPA; columna++) {
+        for (int fila = 1; fila < LARGO_MAPA - 1; fila++) {
+            for (int columna = 1; columna < LARGO_MAPA - 1; columna++) {
                 if (!mapaOceano.esCasillaDesconocida(fila, columna)) {
                     continue;
                 }
@@ -126,13 +125,20 @@ public class MapaCalor extends Mapa<Integer> {
                 }
             }
         }
-        if (sugerenciasCount == 0) {
-            return null;
-        }
         int idx = ThreadLocalRandom.current().nextInt(sugerenciasCount);
         return new Coordenada(sugerencias[idx * 2], sugerencias[idx * 2 + 1]);
     }
 
+    /**
+     * Obtiene una sugerencia de coordenada focalizada, continuando en la dirección
+     * actual o alternando direcciones si no es posible, para hundir un barco
+     * parcialmente descubierto.
+     *
+     * @param coordenadaOriginal coordenada inicial del disparo exitoso
+     * @param coordenadaActual   coordenada actual desde la que se busca continuar
+     * @return coordenada sugerida para el siguiente disparo focalizado, o null si
+     *         no hay opciones válidas
+     */
     public Coordenada getSugerenciaFocalizada(Coordenada coordenadaOriginal, Coordenada coordenadaActual) {
         if (coordenadaActual.getDireccion() == null) {
             coordenadaActual.setDireccion(Direccion.direccionAleatoria());

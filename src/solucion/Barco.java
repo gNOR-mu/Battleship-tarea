@@ -11,33 +11,36 @@ public class Barco {
         this.vida = largo;
     }
 
+    /** 
+     * @return String
+     */
     @Override
     public String toString() {
         return String.format("Barco(Nombre:%s, Largo:%d, Vida:%d)", nombre, largo, vida);
     }
 
-    public Barco(Barco otro) {
-        this.nombre = otro.nombre;
-        this.largo = otro.largo;
-        this.vida = otro.vida;
-    }
-
+    /** 
+     * @return char
+     */
     public char getNombre() {
         return this.nombre;
     }
 
+    /** 
+     * @return int
+     */
     public int getLargo() {
         return this.largo;
     }
 
+    /** 
+     * @return int
+     */
     public int getVida() {
         return this.vida;
     }
 
     public void quitarVida() {
-        if (vida > 0) {
-            vida--;
-        }
+        vida--;
     }
-
 }
