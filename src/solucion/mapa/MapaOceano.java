@@ -61,14 +61,14 @@ public class MapaOceano extends Mapa<Character> {
         Direccion direccion = coordenada.getDireccion();
         boolean direccionHorizontal = direccion == Direccion.DERECHA || direccion == Direccion.IZQUIERDA;
         int valorEje = (direccionHorizontal) ? coordenada.getColumna() : coordenada.getFila();
-        int largo = barco.getLargo();
-        if (!esDireccionValida(direccion, largo, valorEje)) {
+        if (!esDireccionValida(direccion, barco.getLargo(), valorEje)) {
             return false;
         }
+        //si se elimina lo siguiente, se reduce el tiempo a 0,5s pero el promedio empeora 2
         int cambio = (direccion == Direccion.DERECHA || direccion == Direccion.ABAJO) ? 1 : -1;
-        for (int i = 0; i < largo; i++) {
-            char valor;
+        for (int i = 0; i < barco.getLargo(); i++) {
             int nuevoValor = valorEje + (i * cambio);
+            char valor;
             if (direccionHorizontal) {
                 valor = mapa[coordenada.getFila()][nuevoValor];
             } else {

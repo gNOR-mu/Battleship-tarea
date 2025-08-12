@@ -20,6 +20,8 @@ public final class Solucionador extends SolucionadorBase {
         this.barcos = barcos;
         this.mapaOceano = new MapaOceano(largoTablero);
         this.mapaCalor = new MapaCalor(largoTablero, this.mapaOceano);
+
+        this.mapaCalor.actualizarMapa(barcos);
     }
 
     /**
@@ -28,7 +30,6 @@ public final class Solucionador extends SolucionadorBase {
      */
     @Override
     public void solucionar() {
-        this.mapaCalor.actualizarMapa(barcos);
         while (this.tablero.ganar() == 0) {
             Coordenada sugerencia = this.mapaCalor.getSugerencia();
             char disparo = disparar(sugerencia);
@@ -49,6 +50,7 @@ public final class Solucionador extends SolucionadorBase {
         char disparo = this.tablero.disparo(sugerencia.getFila() + CORRECCION, sugerencia.getColumna() + CORRECCION);
         mapaCalor.actualizarMapaCercano(barcos, sugerencia);
         this.mapaOceano.marcar(sugerencia, disparo);
+        this.mapaCalor.marcar(sugerencia, -1);
         return disparo;
     }
 
@@ -73,8 +75,8 @@ public final class Solucionador extends SolucionadorBase {
                 if (esDisparoExitoso(resultadoDisparo)) {
                     hundirBarco(new Coordenada(coordenadaActual), resultadoDisparo);
                 }
-                Direccion direccionOpuesta = coordenadaActual.getDireccion().direccionOpuesta();
-                coordenadaInicial.setDireccion(direccionOpuesta);
+                Direccion getDireccionOpuesta = coordenadaActual.getDireccion().getDireccionOpuesta();
+                coordenadaInicial.setDireccion(getDireccionOpuesta);
                 coordenadaActual = new Coordenada(coordenadaInicial);
             } else {
                 barco.quitarVida();

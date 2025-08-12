@@ -26,6 +26,16 @@ public final class Coordenada extends Punto {
         this.direccion = otro.direccion;
     }
 
+        /**
+     * Crea una nueva coordenada copiando otra coordenada.
+     *
+     * @param otro la coordenada a copiar
+     */
+    public Coordenada(Coordenada otro, Direccion direccion) {
+        super(otro.fila, otro.columna);
+        this.direccion = direccion;
+    }
+
     /**
      * Devuelve una representación en forma de cadena de la coordenada, incluyendo
      * la dirección.

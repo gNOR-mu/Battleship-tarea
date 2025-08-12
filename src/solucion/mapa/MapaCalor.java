@@ -1,6 +1,10 @@
 package solucion.mapa;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import solucion.Barco;
@@ -23,11 +27,11 @@ public class MapaCalor extends Mapa<Integer> {
      */
     public void actualizarMapa(Map<Character, Barco> barcos) {
         Coordenada coordenada = new Coordenada(0, 0);
-        for (int fila = 1; fila < LARGO_MAPA - 1; fila++) {
+        for (int fila = 1; fila < LARGO_MAPA; fila++) {
             coordenada.setFila(fila);
-            for (int columna = 0; columna < LARGO_MAPA - 1; columna++) {
-                coordenada.setColumna(columna);
+            for (int columna = 0; columna < LARGO_MAPA; columna++) {
                 int posibilidad = 0;
+                coordenada.setColumna(columna);
                 for (Barco barco : barcos.values()) {
                     posibilidad += posibilidadesBarcos(barco, coordenada);
                 }
@@ -52,6 +56,7 @@ public class MapaCalor extends Mapa<Integer> {
      * 
      */
     private int posibilidadesBarcos(Barco barco, Coordenada coordenada) {
+        //comprobar si es borde reduce aprox 3 disparos debido a la posicion del problema
         if (esBorde(coordenada)) {
             return 0;
         }
@@ -99,34 +104,25 @@ public class MapaCalor extends Mapa<Integer> {
     }
 
     /**
-     * Obtiene una sugerencia de coordenada para disparar, eligiendo aleatoriamente
-     * entre las posiciones con mayor probabilidad según el mapa de calor.
+     * Obtiene una única sugerencia de coordenada para disparar, eligiendo el primer
+     * valor más probable.
      *
      * @return coordenada sugerida para el próximo disparo
      */
     public Coordenada getSugerencia() {
+        // al momento de realizar el disparo se reemplaza el impacto por -1
+        int[] coordenada = new int[2];
         int mayorPosibilidad = 0;
-        int[] sugerencias = new int[(LARGO_MAPA) * (LARGO_MAPA) * 2];
-        int sugerenciasCount = 0;
-        for (int fila = 1; fila < LARGO_MAPA - 1; fila++) {
-            for (int columna = 1; columna < LARGO_MAPA - 1; columna++) {
-                if (!mapaOceano.esCasillaDesconocida(fila, columna)) {
-                    continue;
-                }
-                int valor = mapa[fila][columna];
-                if (valor > mayorPosibilidad) {
-                    mayorPosibilidad = valor;
-                    sugerenciasCount = 0;
-                }
-                if (valor == mayorPosibilidad) {
-                    sugerencias[sugerenciasCount * 2] = fila;
-                    sugerencias[sugerenciasCount * 2 + 1] = columna;
-                    sugerenciasCount++;
+        for (int fila = 0; fila < LARGO_MAPA; fila++) {
+            for (int columna = 0; columna < LARGO_MAPA; columna++) {
+                if (mapa[fila][columna] > mayorPosibilidad) {
+                    mayorPosibilidad = mapa[fila][columna];
+                    coordenada[0] = fila;
+                    coordenada[1] = columna;
                 }
             }
         }
-        int idx = ThreadLocalRandom.current().nextInt(sugerenciasCount);
-        return new Coordenada(sugerencias[idx * 2], sugerencias[idx * 2 + 1]);
+        return new Coordenada(coordenada[0], coordenada[1]);
     }
 
     /**
@@ -150,13 +146,12 @@ public class MapaCalor extends Mapa<Integer> {
             if (esCoordenadaValida(coordenadaSugerido) && mapaOceano.esCasillaDesconocida(coordenadaSugerido)) {
                 return coordenadaSugerido;
             }
-            if (i % 2 == 0) {
-                nuevaDireccion = coordenadaActual.getDireccion().direccionOpuesta();
+            if ((i & 1) == 0) {
+                nuevaDireccion = coordenadaActual.getDireccion().getDireccionOpuesta();
             } else {
                 nuevaDireccion = coordenadaActual.getDireccion().direccionSentidoOpuestoAleatorio();
             }
-            coordenadaActual = new Coordenada(coordenadaOriginal);
-            coordenadaActual.setDireccion(nuevaDireccion);
+            coordenadaActual = new Coordenada(coordenadaOriginal, nuevaDireccion);
         }
         return null;
     }

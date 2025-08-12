@@ -38,39 +38,23 @@ public class Mapa<T> {
     }
 
     /**
-     * Devuelve una representación en forma de cadena del mapa del océano.
-     * Muestra hasta {@value #MAXIMO_LINEAS_STRING} filas del mapa.
-     * Si el mapa es más grande, se indica con puntos suspensivos.
-     *
-     * @return una cadena que representa el estado actual del mapa
-     */
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder("Mapa del océano:\n");
-        for (int i = 0; i < LARGO_MAPA && i < MAXIMO_LINEAS_STRING; i++) {
-            sb.append(Arrays.toString(mapa[i])).append("\n");
-        }
-        if (LARGO_MAPA > MAXIMO_LINEAS_STRING) {
-            sb.append(".\n\n.\n.\n");
-        }
-        return sb.toString();
-    }
-
-    /**
      * Verifica si una dirección es válida para ubicar un barco de cierto largo
      * desde un valor de eje dado.
      *
      * @param direccion  dirección a verificar
      * @param largoBarco longitud del barco
-     * @param valorEje   valor de fila o columna desde donde se evalúa
+     * @param valorEje   valor de fila o columna desde donde se evalua
      * @return true si la dirección es válida, false en caso contrario
      */
     protected boolean esDireccionValida(Direccion direccion, int largoBarco, int valorEje) {
-        return switch (direccion) {
-            case ARRIBA, IZQUIERDA -> valorEje - (largoBarco - 1) >= 0;
-            case ABAJO, DERECHA -> valorEje + largoBarco <= LARGO_MAPA;
-            default -> false;
-        };
+        // case ARRIBA, IZQUIERDA -> valorEje - largoBarco >= -1; con -1 debido al largo
+        // del barco, se le debería restar a (largoBarco -1) para que sea >= 0
+        // sin embargo es costoso si se repite más de 18 millones de veces
+        if (direccion == Direccion.ARRIBA || direccion == Direccion.IZQUIERDA) {
+            return valorEje - largoBarco >= -1;
+        } else {
+            return valorEje + largoBarco <= LARGO_MAPA;
+        }
     }
 
     /**
@@ -94,8 +78,8 @@ public class Mapa<T> {
     protected boolean esCoordenadaValida(Coordenada coordenada) {
         return (coordenada != null
                 && coordenada.getFila() >= 0
-                && coordenada.getFila() < LARGO_MAPA
                 && coordenada.getColumna() >= 0
+                && coordenada.getFila() < LARGO_MAPA
                 && coordenada.getColumna() < LARGO_MAPA);
     }
 
@@ -108,8 +92,8 @@ public class Mapa<T> {
      */
     protected boolean esCoordenadaValida(int fila, int columna) {
         return (fila >= 0
-                && fila < LARGO_MAPA
                 && columna >= 0
+                && fila < LARGO_MAPA
                 && columna < LARGO_MAPA);
     }
 

@@ -14,37 +14,28 @@ public class App {
         final int LARGO_TABLERO = 10;
         final int CANTIDAD_JUEGOS = 500_000;
         final int CANTIDAD_HILOS = Runtime.getRuntime().availableProcessors();
-        // mejor tiempo resolviendo 1.029s para 500_000 juegos en i5-14600k
+        // mejor tiempo resolviendo 0,774 segundos para 500_000 juegos en i5-14600k
         AtomicInteger intentos = new AtomicInteger(0);
-        AtomicLong tiempoTotalTablero = new AtomicLong(0);
-
-        long startTime = System.currentTimeMillis();
+        AtomicLong tiempoTotalSolucionando = new AtomicLong(0);
         IntStream.range(0, CANTIDAD_JUEGOS).parallel().forEach(i -> {
-            long startTableroTime = System.nanoTime();
             Tablero tablero = new Tablero(LARGO_TABLERO);
-            long endTableroTime = System.nanoTime();
-            tiempoTotalTablero.addAndGet(endTableroTime - startTableroTime);
-
             Map<Character, Barco> barcos = crearBarcos();
+            long inicioTiempoSolucion = System.nanoTime();
             Solucionador solucionador = new Solucionador(tablero, LARGO_TABLERO, barcos);
             solucionador.solucionar();
+            tiempoTotalSolucionando.addAndGet(System.nanoTime() - inicioTiempoSolucion);
             intentos.addAndGet(tablero.ganar());
         });
-
-        double tiempoTermino = ((double) System.currentTimeMillis() - startTime) / 1000;
-        double tiempoTableros = (double) tiempoTotalTablero.get() / 1_000_000_000 / CANTIDAD_HILOS;
-        double tiempoResolviendo = tiempoTermino - tiempoTableros;
+        double tiempoResolviendo = (double) tiempoTotalSolucionando.get() / 1_000_000_000 / CANTIDAD_HILOS;
 
         System.out.format("Intentos: %d%n", intentos.get());
         System.out.format("Intentos promedio: %.4f%n", (double) intentos.get() / CANTIDAD_JUEGOS);
-        System.out.format("Tiempo de ejecucion: %.3f segundos%n", tiempoTermino);
-        System.out.format("Tiempo creando Tableros: %.3f segundos%n", tiempoTableros);
         System.out.format("Tiempo resolviendo: %.3f segundos%n", tiempoResolviendo);
     }
 
-    
-    /** 
+    /**
      * Crea los barcos del juego
+     * 
      * @return Map<Character, Barco> Map de barcos con key: inicial, valor new Barco
      */
     public static Map<Character, Barco> crearBarcos() {

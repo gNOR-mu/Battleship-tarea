@@ -1,5 +1,6 @@
-# JDK
-JDK: 21
+# JDK Utilizado
+
+JDK: 24
 
 Compilación
 
@@ -16,23 +17,43 @@ java -cp bin solucion.App
 ```
 
 # Nota
-  ✅ El objetivo principal de la tarea es resolver en menos de 50 tiros.  
- ❕ Adicionalmente hay que investigar la forma de seguir reduciendo el promedio. 
 
- ❕ También me quiero enfocar en resolver los 500 000 tableros en menos de 1 segundo sin importar el tipo de optimización que conlleve.
+  ✅ El objetivo principal de la tarea es resolver en menos de 50 tiros (cumplido).
+
+ ✅ También me quiero enfocar en resolver los 500 000 tableros en menos de 1 segundo sin importar el tipo de optimización que conlleve.
+ 
+ - Próximo: Reducir el tiempo a menos de 0,1 segundos.
+
+En mapa oceano se puede reducir el tiempo en 0,3 segundos al eliminar el siguiente fragmento de código, con el inconveniente de que empeora el promedio de disparos, aumentando a 39.
+
+```Java
+int cambio = (direccion == Direccion.DERECHA || direccion == Direccion.ABAJO) ? 1 : -1;
+  for (int i = 0; i < barco.getLargo(); i++) {
+      int nuevoValor = valorEje + (i * cambio);
+      char valor;
+      if (direccionHorizontal) {
+          valor = mapa[coordenada.getFila()][nuevoValor];
+      } else {
+          valor = mapa[nuevoValor][coordenada.getColumna()];
+      }
+      if (valor != DESCONOCIDO) {
+          return false;
+      }
+  }
+```
+
+ 
+ ❕ Adicionalmente me quiero enfocar en investigar formas de seguir reduciendo el promedio. 
+
 
 
 **Resumen para 500 000 tableros en i5-14600k**
 
-Intentos: 18776809
+Intentos: 18789244
 
-Intentos promedio: 37,5536
+Intentos promedio: 37,5785
 
-Tiempo de ejecucion: 1,512 segundos
-
-Tiempo creando Tableros: 0,483 segundos
-
-Tiempo resolviendo: 1,029 segundos
+Tiempo resolviendo: 0,774 segundos
 
 ![image](imagenes/grafico_disparos.png)
 

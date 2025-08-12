@@ -23,14 +23,13 @@ public enum Direccion {
      *
      * @return la dirección opuesta
      */
-    public Direccion direccionOpuesta() {
+    public Direccion getDireccionOpuesta() {
         return switch (this) {
             case ARRIBA -> ABAJO;
             case ABAJO -> ARRIBA;
             case IZQUIERDA -> DERECHA;
             case DERECHA -> IZQUIERDA;
         };
-
     }
 
     /**
@@ -42,9 +41,10 @@ public enum Direccion {
      * @return una dirección aleatoria en el sentido opuesto
      */
     public Direccion direccionSentidoOpuestoAleatorio() {
-        return switch (this) {
-            case IZQUIERDA, DERECHA -> VERTICALES[ThreadLocalRandom.current().nextInt(VERTICALES.length)];
-            case ARRIBA, ABAJO -> HORIZONTALES[ThreadLocalRandom.current().nextInt(HORIZONTALES.length)];
-        };
+        if (this == IZQUIERDA || this == DERECHA) {
+            return VERTICALES[ThreadLocalRandom.current().nextInt(VERTICALES.length)];
+        } else {
+            return HORIZONTALES[ThreadLocalRandom.current().nextInt(HORIZONTALES.length)];
+        }
     }
 }
