@@ -14,7 +14,7 @@ public class App {
         final int LARGO_TABLERO = 10;
         final int CANTIDAD_JUEGOS = 500_000;
         final int CANTIDAD_HILOS = Runtime.getRuntime().availableProcessors();
-        // mejor tiempo resolviendo 0,774 segundos para 500_000 juegos en i5-14600k
+        // mejor tiempo resolviendo 0,745 segundos para 500_000 juegos en i5-14600k
         AtomicInteger intentos = new AtomicInteger(0);
         AtomicLong tiempoTotalSolucionando = new AtomicLong(0);
         IntStream.range(0, CANTIDAD_JUEGOS).parallel().forEach(i -> {

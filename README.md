@@ -6,14 +6,18 @@ Compilación
 
 
 ```
-javac -d bin -cp src src/problema/*.java src/solucion/*.java src/solucion/enumerados/*.java src/solucion/mapa/*.java
+
+javac --release 24 -g:none -d bin -cp src src/problema/*.java src/solucion/*.java src/solucion/enumerados/*.java src/solucion/mapa/*.java
+
 ```
 
 
 Ejecución
 
 ```
-java -cp bin solucion.App
+
+java -Xms1024m -Xmx1024m -cp bin solucion.App
+
 ```
 
 # Nota
@@ -49,11 +53,11 @@ int cambio = (direccion == Direccion.DERECHA || direccion == Direccion.ABAJO) ? 
 
 **Resumen para 500 000 tableros en i5-14600k**
 
-Intentos: 18789244
+Intentos: 18789144
 
-Intentos promedio: 37,5785
+Intentos promedio: 37,5783
 
-Tiempo resolviendo: 0,774 segundos
+Tiempo resolviendo: 0,745 segundos
 
 ![image](imagenes/grafico_disparos.png)
 
