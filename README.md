@@ -1,6 +1,7 @@
+# Reemplazado y mejorado en -> [Battleship-Solver](https://github.com/gNOR-mu/Battleship-Solver)
+
 # JDK Utilizado
 
-Reemplazado y mejorado en [Este repositorio](https://github.com/gNOR-mu/gNOR-mu-Battleship-Solver)
 
 JDK: 24
 
