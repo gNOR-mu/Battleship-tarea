@@ -1,5 +1,7 @@
 # JDK Utilizado
 
+Reemplazado y mejorado en [Este repositorio](https://github.com/gNOR-mu/gNOR-mu-Battleship-Solver)
+
 JDK: 24
 
 Compilación
@@ -16,7 +18,7 @@ Ejecución
 
 ```
 
-java -Xms1024m -Xmx1024m -cp bin solucion.App
+java -cp bin solucion.App
 
 ```
 
